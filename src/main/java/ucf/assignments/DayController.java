@@ -10,6 +10,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 
 public class DayController extends ListController {
+    //At this point I have a hard time understanding what I will want to do with this class
+    //I will need more time to understand the way I will want to fire my controllers and scenes
     private final String labelName;
 
     @FXML Label centerDayField;

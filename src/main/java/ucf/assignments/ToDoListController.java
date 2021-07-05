@@ -16,6 +16,8 @@ import javafx.scene.layout.BorderPane;
 import java.io.IOException;
 
 public class ToDoListController {
+    private Database database;
+
     @FXML TextField topSearchBar;
 
     @FXML Button leftTodayBtn;
@@ -39,6 +41,13 @@ public class ToDoListController {
 
     //final implementation will be different, for now it just loads different scenes just to prove that everything works
     @FXML public void initialize() {
+        //The line below will create a new database object with specified file path
+        //when database object will be created I will be able to use information from database
+        //for initialization of fields in scenes (e.g. passing this info to controllers)
+        //database = new Database()
+
+        //Code below is there just for the sake of testing transition between scenes
+        //It won't be structured in that way in the final version
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DayView.fxml"));
         fxmlLoader.setControllerFactory(DayController -> new DayController("Today!", this));
         try {
