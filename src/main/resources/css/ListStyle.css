@@ -1,0 +1,87 @@
+/*CENTER PANE START*/
+#center .root, #center {
+    -fx-background-color: rgb(249, 240, 242);
+}
+
+#centerMenuBar .menu:hover, #centerMenuBar .menu:showing {
+    -fx-background-color: rgb(229, 220, 222);
+    -fx-border-color: rgb(189,180,181);
+    -fx-background-radius: 12 12 0 12;
+    -fx-border-radius: 12 12 0 12;
+}
+
+#centerMenuBar .context-menu, #centerMenuBar .menu-item:hover {
+    -fx-border-radius: 12 0 12 12;
+    -fx-background-radius: 12 0 12 12;
+}
+
+#centerMenuBar .context-menu {
+    -fx-translate-x: -160;
+    -fx-background-color: rgb(249, 240, 242);
+    -fx-border-color: rgb(229, 220, 222);
+}
+
+#centerMenuBar .menu-item:hover {
+    -fx-background-color: rgb(229, 220, 222);
+    -fx-border-color: rgb(209,200,201);
+}
+
+#centerTaskProgressBar .bar, #centerTaskProgressBar {
+    -fx-background-radius: 12;
+    -fx-background-color: rgb(41, 76, 96);
+}
+
+#centerTaskProgressBar .track {
+    -fx-background-color: transparent;
+}
+
+#centerNewTaskBtn {
+    -fx-background-color: rgb(173, 182, 196);
+    -fx-border-color: rgb(153, 162, 174);
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-style: solid;
+}
+
+#centerNewTaskBtn:hover {
+    -fx-background-color: rgb(143, 152, 166);
+    -fx-border-color: rgb(123, 132, 146);
+}
+
+#centerTaskPane {
+    -fx-background-color: rgb(255, 196, 155);
+    -fx-border-color: rgb(235, 176, 135);
+    -fx-border-style: solid;
+    -fx-border-width: 0.5;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+#centerTaskPane:hover {
+    -fx-background-color: rgb(215, 156, 115);
+    -fx-border-color: rgb(195, 136, 95);
+}
+
+#centerTaskRadioBtn {
+    -fx-background-image: url("../icons/unchecked.png");
+    -fx-background-repeat: no-repeat no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: 24;
+
+    -fx-border-image-insets: 0;
+    -fx-background-insets: 0;
+}
+
+#centerTaskRadioBtn .radio {
+    -fx-opacity: 0;
+    -fx-padding: 10;
+}
+
+#centerTaskRadioBtn:hover {
+    -fx-background-image: url("../icons/check.png");
+}
+
+#centerTaskRadioBtn:selected {
+    -fx-background-image: url("../icons/checked.png");
+}
+/*CENTER PANE END*/

@@ -1,0 +1,153 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Task {
+    -String name
+    -Date dueDate
+    -String description
+    -int state;
+
+    +Task(String)
+    +Task(String, Date, String)
+
+    +setName(String):void
+    +setDueDate(Date):void
+    +setDescription(String):void
+    +setState(int):void
+
+    +getName():String
+    +getDueDate():Date
+    +getDescription():String
+    +getState():int
+}
+
+class List {
+    -Collection<Task> taskCollection
+
+    +List()
+    +List(Collection<Task>)
+
+    +push(Task):void
+    +pop(Task):void
+    +find(Task):Task
+    +find(String):Task
+
+    +getTaskCollection():Collection<Task>
+    +setTaskCollection(Collection<Task>):void
+}
+
+class DateFormatter {
+    -DateFormatter()
+
+    +formatDate(Date):Date
+}
+
+class Sort {
+    -Sort()
+
+    +sortByName(Collection<Task>):Collection<Task>
+    +sortByState(Collection<Task>):Collection<Task>
+    +sortByDueDate(Collection<Task>):Collection<Task>
+}
+
+class ToDoListController {
+    -AnchorPane todayView
+    -AnchorPane tomorrowView
+    -AnchorPane nextSevenDaysView
+
+    +initialize():void
+
+    +topSearchBarReleased(MouseEvent):void
+
+    +leftTodayBtnClicked(MouseEvent):void
+    +leftTomorrowBtnClicked(MouseEvent):void
+    +leftNextSevenDaysBtnClicked(MouseEvent):void
+    +leftShowListBtnClicked(MouseEvent):void
+    +leftListBtnClicked(MouseEvent):void
+    +leftNewListBtnClicked(MouseEvent):void
+
+    +rightAddDueDateBtnClicked(MouseEvent):void
+    +rightBackBtnClicked(MouseEvent):void
+    +rightDeleteBtnClicked(MouseEvent):void
+
+    +hideNode(Node):void
+    +showNode(Node):void
+    +btnStyle(MouseEvent, String):void
+}
+
+class ListController {
+    -ToDoListController toDoListController
+    -String listName
+
+    +ListController(ToDoListController)
+    +ListController(String, ToDoListController)
+
+    +initialize():void
+
+    +listNameFieldClicked(MouseEvent):void
+
+    +menuShowAllClicked(ActionEvent):void
+    +menuShowCompletedClicked(ActionEvent):void
+    +menuShowInProgressClicked(ActionEvent):void
+    +menuDeleteListClicked(ActionEvent):void
+
+    +centerTaskBtnClicked(MouseEvent):void
+    +centerTaskRadioBtnClicked(MouseEvent):void
+    +centerNewTaskBtnClicked(MouseEvent):void
+
+}
+
+class DayController {
+    -String labelName
+
+    +DayController(String, ToDoListController)
+
+    +initialize()
+}
+
+class Database {
+    -Collection<List> listCollection;
+    -File file;
+
+    +Database(File)
+
+    -download():void
+    +upload():void
+
+    +getCollection():Collection<List>
+    +setCollection(Collection<List>):void
+}
+
+class File {
+    -String filePath
+
+    +File(String)
+    +readAll():String
+    +write(String):void
+}
+
+class Serializer {
+    -Serializer()
+
+    +serialize(Collection<List>):String
+}
+
+class Deserializer {
+    -Deserializer()
+
+    +deserializer(String):Collection<List>
+}
+
+File --* Database
+Serializer --* Database
+Deserializer --* Database
+List -- Serializer
+List -- Deserializer
+Database --* ToDoListController
+List --* Database
+DayController -|> ListController
+ListController --* ToDoListController
+Task --* List
+Sort -- List
+DateFormatter -- List
+@enduml

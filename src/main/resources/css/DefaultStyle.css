@@ -1,0 +1,53 @@
+/*DEFAULT*/
+.menu-bar, .menu-bar .menu:hover, .menu-bar .menu:showing {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-selection-bar: transparent;
+    -fx-border-style: solid;
+    -fx-border-width: 0.2;
+}
+
+.menu-bar .context-menu {
+    -fx-max-width: 200;
+    -fx-min-width: 200;
+    -fx-pref-width: 200;
+
+    -fx-border-style: solid;
+}
+
+.menu-bar .menu-item .label {
+    -fx-text-fill: black;
+}
+
+.menu-bar .menu-item:hover {
+    -fx-border-width: 0.2;
+}
+
+.text-area, .text-field {
+    -fx-text-fill: black;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-style: hidden;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
+.text-area .scroll-pane, .text-area .scroll-pane .viewport, .text-area .scroll-pane .content {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-style: hidden;
+}
+
+.pane, .button, .button:hover, .pane:hover, .scroll-pane, .scroll-pane .viewport, .button, .toggle-button{
+    -fx-hbar-policy: never;
+    -fx-vbar-policy: never;
+    -fx-border-style: hidden;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-insets: 0;
+    -fx-background-insets: 0;
+}
