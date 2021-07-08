@@ -42,14 +42,6 @@ class DateFormatter {
     +formatDate(Date):Date
 }
 
-class Sort {
-    -Sort()
-
-    +sortByName(Collection<Task>):Collection<Task>
-    +sortByState(Collection<Task>):Collection<Task>
-    +sortByDueDate(Collection<Task>):Collection<Task>
-}
-
 class ToDoListController {
     -AnchorPane todayView
     -AnchorPane tomorrowView
@@ -106,48 +98,25 @@ class DayController {
 }
 
 class Database {
-    -Collection<List> listCollection;
-    -File file;
+    +Database()
 
-    +Database(File)
-
-    -download():void
-    +upload():void
-
+    +getCollection()
     +getCollection():Collection<List>
     +setCollection(Collection<List>):void
 }
 
-class File {
-    -String filePath
-
-    +File(String)
-    +readAll():String
-    +write(String):void
+class Query {
+    -String insertTask
+    -String removeTask
+    -String removeList
+    -String findList
+    -String findTask
 }
 
-class Serializer {
-    -Serializer()
-
-    +serialize(Collection<List>):String
-}
-
-class Deserializer {
-    -Deserializer()
-
-    +deserializer(String):Collection<List>
-}
-
-File --* Database
-Serializer --* Database
-Deserializer --* Database
-List -- Serializer
-List -- Deserializer
 Database --* ToDoListController
 List --* Database
 DayController -|> ListController
 ListController --* ToDoListController
 Task --* List
-Sort -- List
 DateFormatter -- List
 @enduml

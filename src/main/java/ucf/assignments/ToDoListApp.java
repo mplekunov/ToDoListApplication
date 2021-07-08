@@ -17,6 +17,7 @@ import java.util.Objects;
 public class ToDoListApp extends Application {
 
     public static void main(String[] args) {
+        Connect.connect();
         launch(args);
     }
 

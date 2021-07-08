@@ -6,14 +6,12 @@
 package ucf.assignments;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public final class DateFormatter {
     private DateFormatter() {};
 
-    public static LocalDate formatDate(LocalDate date) {
-        //get date
-        //format date
-        //return formatted date
-        throw new UnsupportedOperationException();
+    public static String dateToString(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 }

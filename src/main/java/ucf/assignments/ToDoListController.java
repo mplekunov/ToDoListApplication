@@ -14,9 +14,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class ToDoListController {
-    private Database database;
+    private List<ListStructure> listCollection;
 
     @FXML TextField topSearchBar;
 
@@ -80,6 +83,7 @@ public class ToDoListController {
             e.printStackTrace();
         }
 
+        listCollection =
         mainPane.centerProperty().set(todayView);
     }
 
@@ -162,6 +166,8 @@ public class ToDoListController {
     @FXML
     public void leftNewListBtnClicked(MouseEvent event) {
         btnStyle(event, "-fx-padding: 0 0 0 20; -fx-font-size: 14");
+
+        database
         //hides button
         //creates tempTextField on the place of button
         //let user enter the name of the list

@@ -12,17 +12,16 @@ public class Task {
     private String name;
     private LocalDate dueDate;
     private String description;
-    int state;
-
-    public Task(String name) {
-        this.name = name;
+    private int state;
+    public Task() {
+        this.name = "";
         this.dueDate = null;
         this.description = "";
         this.state = 0;
     }
 
     public Task(String name, LocalDate dueDate, String description) {
-        this(name);
+        this.name = name;
         this.dueDate = dueDate;
         this.description = description;
     }
@@ -64,7 +63,7 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return state == task.state && name.equals(task.name);
+        return name.equals(task.name);
     }
 
     @Override

@@ -14,9 +14,7 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    implementation group: 'io.github.typhon0', name: 'AnimateFX', version: '1.2.1'
-
-    //compile 'io.github.typhon0:AnimateFX:1.2.2'
+    implementation 'org.xerial:sqlite-jdbc:3.36.0.1'
 }
 
 javafx {
