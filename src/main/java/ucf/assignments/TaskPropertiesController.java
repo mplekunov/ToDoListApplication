@@ -7,7 +7,6 @@ package ucf.assignments;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.DatePickerSkin;
@@ -21,7 +20,7 @@ import static ucf.assignments.ToDoListController.*;
 
 public class TaskPropertiesController {
     private final ListController listController;
-    private final Task task;
+    private final String taskName;
 
     @FXML AnchorPane right;
     @FXML TextField rightTaskNameField;
@@ -32,41 +31,44 @@ public class TaskPropertiesController {
     @FXML VBox rightDueDateAndNoteVBox;
     @FXML AnchorPane rightAddDueDatePane;
 
-    public TaskPropertiesController(Task task, ListController listController) {
+    public TaskPropertiesController(String taskName, ListController listController) {
         this.listController = listController;
-        this.task = task;
+        this.taskName = taskName;
     }
 
     public void initialize() {
-        rightTaskNameField.setText(task.getName());
 
-        rightAddNoteField.setText(task.getDescription());
+        rightTaskNameField.setText(listController.findListModel().getListName());
+
+        rightAddNoteField.setText(listController.findListModel().findTask(taskName).getDescription());
+
         rightAddNoteField.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
             TextArea tx = (TextArea) event.getSource();
             if (tx.getText().length() >= 256) {
                 event.consume();
             }
             else if (tx.getText().length() >= 1)
-                listController.getListManager().changeTaskNote(task.getName(), tx.getText());
+                listController.getListModel().getTask(taskName).setDescription(tx.getText());
         });
 
-        if (task.getDueDate() != null ) {
-            rightAddDueDateBtn.setText(DateFormatter.dateToString(task.getDueDate()));
+        if (listController.findListModel().findTask(taskName).getDueDate() != null ) {
+            rightAddDueDateBtn.setText(DateFormatter.dateToString(listController.findListModel().findTask(taskName).getDueDate()));
             createDueDateClearBtn();
         }else
             rightAddDueDateBtn.setText("Add Due Date");
 
         rightAddDueDateBtn.setOnMouseClicked(event -> {
             hideNode(rightAddDueDateBtn.getParent());
-            VBox calendar = createCalendar(rightDueDateAndNoteVBox, task);
+            VBox calendar = createCalendar(rightDueDateAndNoteVBox);
             rightDueDateAndNoteVBox.getChildren().add(calendar);
         });
 
         rightDeleteBtn.setOnMouseReleased(event -> {
-            listController.getListManager().deleteTask(task.getName());
+            listController.getListModel().deleteTask(taskName);
 
             rightBackBtnClicked(event);
             listController.taskScrollPaneVBox.getChildren().remove(((Node)event.getSource()).getParent());
+            listController.updateTaskScrollPane();
         });
 
     }
@@ -80,44 +82,45 @@ public class TaskPropertiesController {
             setAnchorProperty(rightAddDueDateBtn, 0d, 0d, 0d, 0d);
 
             rightAddDueDatePane.getChildren().remove(clear);
-            task.setDueDate(null);
+            listController.getListModel().getTask(taskName).setDueDate(null);
+//            taskModel.setDueDate(null);
         }
     }
 
     @FXML
     //DOESN'T WORK
     protected void addListenerToRightTextField(MouseEvent event) {
-        if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
-            ContextMenu errorPopup = initTextFieldValidator(rightTaskNameField);
-
-            Button eventBtn = (Button) event.getSource();
-            rightTaskNameField.focusedProperty().addListener((observable, unfocused, focused) -> {
-                if (unfocused) {
-                    if (rightTaskNameField.getText().isEmpty())
-                        rightTaskNameField.requestFocus();
-                    else {
-                        try {
-                            Task foundTask = listController.getListManager().findTask(rightTaskNameField.getText());
-
-                            if (!foundTask.getName().equals(eventBtn.getText())) {
-                                rightTaskNameField.getParent().setStyle("-fx-border-color: red");
-                                errorPopup.getItems().clear();
-                                errorPopup.getItems().add(new MenuItem("Task with that name already exists!"));
-                                errorPopup.show(rightTaskNameField, Side.RIGHT, -rightTaskNameField.getWidth(), -rightTaskNameField.getHeight());
-
-                                rightTaskNameField.requestFocus();
-                            }
-                        } catch (NullPointerException e) {
-                            listController.getListManager().changeTaskName(eventBtn.getText(), rightTaskNameField.getText());
-                            eventBtn.setText(rightTaskNameField.getText());
-
-                            rightBackBtnClicked(event);
-                            listController.updateTaskScrollPane();
-                        }
-                    }
-                }
-            });
-        }
+//        if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+//            ContextMenu errorPopup = initTextFieldValidator(rightTaskNameField);
+//
+//            Button eventBtn = (Button) event.getSource();
+//            rightTaskNameField.focusedProperty().addListener((observable, unfocused, focused) -> {
+//                if (unfocused) {
+//                    if (rightTaskNameField.getText().isEmpty())
+//                        rightTaskNameField.requestFocus();
+//                    else {
+//                        try {
+//                            Task foundTask = listController.getListModel().findTask(rightTaskNameField.getText());
+//
+//                            if (!foundTask.getName().equals(eventBtn.getText())) {
+//                                rightTaskNameField.getParent().setStyle("-fx-border-color: red");
+//                                errorPopup.getItems().clear();
+//                                errorPopup.getItems().add(new MenuItem("Task with that name already exists!"));
+//                                errorPopup.show(rightTaskNameField, Side.RIGHT, -rightTaskNameField.getWidth(), -rightTaskNameField.getHeight());
+//
+//                                rightTaskNameField.requestFocus();
+//                            }
+//                        } catch (NullPointerException e) {
+//                            listController.getListModel().changeTaskName(eventBtn.getText(), rightTaskNameField.getText());
+//                            eventBtn.setText(rightTaskNameField.getText());
+//
+//                            rightBackBtnClicked(event);
+//                            listController.updateTaskScrollPane();
+//                        }
+//                    }
+//                }
+//            });
+//        }
     }
 
     @FXML
@@ -170,8 +173,8 @@ public class TaskPropertiesController {
         return btn;
     }
 
-    protected VBox createCalendar(Pane parent, Task task) {
-        DatePicker datePicker = new DatePicker(task.getDueDate());
+    protected VBox createCalendar(Pane parent) {
+        DatePicker datePicker = new DatePicker(listController.findListModel().findTask(taskName).getDueDate());
         DatePickerSkin datePickerSkin = new DatePickerSkin(datePicker);
         Node popupContent = datePickerSkin.getPopupContent();
 
@@ -197,8 +200,9 @@ public class TaskPropertiesController {
         });
 
         save.setOnMouseReleased(keyEvent -> {
-            task.setDueDate(datePicker.getValue());
-            rightAddDueDateBtn.setText(DateFormatter.dateToString(task.getDueDate()));
+            listController.getListModel().getTask(taskName).setDueDate(datePicker.getValue());
+
+            rightAddDueDateBtn.setText(DateFormatter.dateToString(listController.findListModel().findTask(taskName).getDueDate()));
             createDueDateClearBtn();
             cancel.fireEvent(keyEvent);
         });

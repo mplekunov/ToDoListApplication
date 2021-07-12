@@ -20,7 +20,8 @@ import static ucf.assignments.ToDoListController.*;
 
 public class ListController {
     private final ToDoListController toDoListController;
-    private final ListManager listManager;
+    private final String listName;
+
     private TaskPropertiesController taskProperties;
 
     private AnchorPane taskPropertiesView;
@@ -53,21 +54,25 @@ public class ListController {
     @FXML
     MenuItem menuDeleteAllTasks;
 
-    public ListController(ListManager listManager, ToDoListController toDoListController) {
-        this.listManager = listManager;
+    public ListController(String listName, ToDoListController toDoListController) {
+        this.listName = listName;
         this.toDoListController = toDoListController;
     }
 
     @FXML
     public void initialize() {
-        centerListNameField.setText(listManager.getListName());
-        listManager.getAllTasks().forEach(task -> createTaskBtn(task.getName()));
+        ListModel listModel = toDoListController.getToDoListModel().findList(listName);
+
+        centerListNameField.setText(listModel.getListName());
+        listModel.getAllTasks().forEach(this::createTaskBtn);
         setTaskProgressBar();
     }
 
     protected void updateTaskScrollPane() {
+        ListModel listModel = toDoListController.getToDoListModel().findList(listName);
+
         taskScrollPaneVBox.getChildren().removeAll(taskScrollPaneVBox.getChildren());
-        listManager.getAllTasks().forEach(task -> createTaskBtn(task.getName()));
+        listModel.getAllTasks().forEach(this::createTaskBtn);
     }
 
     //DOESN'T WORK
@@ -116,31 +121,39 @@ public class ListController {
 
     @FXML
     public void menuShowAllClicked(ActionEvent event) {
+        ListModel listModel = toDoListController.getToDoListModel().findList(listName);
+
         taskScrollPaneVBox.getChildren().removeAll(taskScrollPaneVBox.getChildren());
-        listManager.getAllTasks().forEach(task -> createTaskBtn(task.getName()));
+        listModel.getAllTasks().forEach(this::createTaskBtn);
     }
 
     @FXML
     public void menuShowCompletedClicked(ActionEvent event) {
+        ListModel listModel = toDoListController.getToDoListModel().findList(listName);
+
         taskScrollPaneVBox.getChildren().removeAll(taskScrollPaneVBox.getChildren());
-        listManager.getCompletedTasks().forEach(task -> createTaskBtn(task.getName()));
+        listModel.getCompletedTasks().forEach(this::createTaskBtn);
     }
 
     @FXML
     public void menuShowInProgressClicked(ActionEvent event) {
+        ListModel listModel = toDoListController.getToDoListModel().findList(listName);
+
         taskScrollPaneVBox.getChildren().removeAll(taskScrollPaneVBox.getChildren());
-        listManager.getInProgressTasks().forEach(task -> createTaskBtn(task.getName()));
+        listModel.getInProgressTasks().forEach(this::createTaskBtn);
     }
 
     @FXML
     public void menuDeleteAllTasksClicked(ActionEvent event) {
+        ListModel listModel = toDoListController.getToDoListModel().getList(listName);
+
         taskScrollPaneVBox.getChildren().removeAll(taskScrollPaneVBox.getChildren());
-        listManager.getAllTasks().forEach(task -> listManager.deleteTask(task.getName()));
+        listModel.getAllTasks().forEach(listModel::deleteTask);
     }
 
     @FXML
     public void menuDeleteListClicked(ActionEvent event) {
-        toDoListController.getToDoList().deleteList(listManager.getListName());
+        toDoListController.getToDoListModel().deleteList(listName);
         toDoListController.setCenterPropertyToDefault();
         toDoListController.updateListScrollPane();
     }
@@ -150,8 +163,10 @@ public class ListController {
         btnStyle(event, "-fx-padding: 0 0 0 0 50; -fx-font-size: 11");
 
         if (event.getEventType().equals(MouseEvent.MOUSE_PRESSED)) {
+            ListModel listModel = toDoListController.getToDoListModel().findList(listName);
+
             if (toDoListController.mainPane.getRight() == null || taskPropertiesView == null || !taskProperties.rightTaskNameField.getText().equals(taskName)) {
-                createTaskPropertiesView(listManager.findTask(taskName));
+                createTaskPropertiesView(listModel.findTask(taskName).getName());
                 toDoListController.mainPane.setRight(taskPropertiesView);
             }
 
@@ -163,9 +178,9 @@ public class ListController {
         }
     }
 
-    private void createTaskPropertiesView(Task task) {
+    private void createTaskPropertiesView(String taskName) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("taskPropertiesView.fxml"));
-        taskProperties = new TaskPropertiesController(task, this);
+        taskProperties = new TaskPropertiesController(taskName, this);
         fxmlLoader.setControllerFactory(taskPropertiesController -> taskProperties);
         try {
             taskPropertiesView = fxmlLoader.load();
@@ -180,7 +195,8 @@ public class ListController {
         RadioButton radioButton = (RadioButton) event.getSource();
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
-            listManager.changeTaskCompletionState(taskName, radioButton.isSelected());
+            ListModel listModel = toDoListController.getToDoListModel().getList(listName);
+            listModel.getTask(taskName).setCompletionState(radioButton.isSelected());
 
             taskPaneStyle(radioButton);
 
@@ -208,9 +224,11 @@ public class ListController {
                 if (unfocused) {
                     if (!textField.getText().isEmpty()) {
                         try {
-                            listManager.addTask(textField.getText());
+                            ListModel listModel = toDoListController.getToDoListModel().getList(listName);
+                            TaskModel taskModel = new TaskModel(textField.getText());
+                            listModel.addTask(taskModel);
 
-                            createTaskBtn(textField.getText());
+                            createTaskBtn(taskModel);
 
                             updateTaskScrollPane();
 
@@ -236,28 +254,30 @@ public class ListController {
     }
 
     private void setTaskProgressBar() {
-        if (listManager.getAllTasks().size() != 0) {
-            centerTaskProgressBar.setProgress(listManager.getCompletedTasks().size() / (double) listManager.getAllTasks().size());
+        ListModel listModel = toDoListController.getToDoListModel().findList(listName);
+
+        if (listModel.getAllTasks().size() != 0) {
+            centerTaskProgressBar.setProgress(listModel.getCompletedTasks().size() / (double) listModel.getAllTasks().size());
             centerProgressBarField.setText(String.format("%.0f", centerTaskProgressBar.getProgress() * 100) + "%");
         } else
             centerProgressBarField.setText("0%");
     }
 
-    protected void createTaskBtn(String taskName) {
-        Button btn = new Button(taskName);
+    protected void createTaskBtn(TaskModel task) {
+        Button btn = new Button(task.getName());
         btn.setId("centerTaskBtn");
         setAnchorProperty(btn, 30d, 0d, 0d, 0d);
 
-        btn.setOnMousePressed(event -> centerTaskBtnClicked(event, taskName));
-        btn.setOnMouseReleased(event -> centerTaskBtnClicked(event, taskName));
+        btn.setOnMousePressed(event -> centerTaskBtnClicked(event, task.getName()));
+        btn.setOnMouseReleased(event -> centerTaskBtnClicked(event, task.getName()));
 
         RadioButton radioBtn = new RadioButton();
-        radioBtn.setSelected(listManager.findTask(taskName).getCompletionState());
+        radioBtn.setSelected(task.getCompletionState());
         radioBtn.setId("centerTaskRadioBtn");
         setAnchorProperty(radioBtn, 0d, null, 0d, 0d);
 
-        radioBtn.setOnMousePressed(event -> centerTaskRadioBtnClicked(event, taskName));
-        radioBtn.setOnMouseReleased(event -> centerTaskRadioBtnClicked(event, taskName));
+        radioBtn.setOnMousePressed(event -> centerTaskRadioBtnClicked(event, task.getName()));
+        radioBtn.setOnMouseReleased(event -> centerTaskRadioBtnClicked(event, task.getName()));
 
         AnchorPane anchorPane = new AnchorPane(btn, radioBtn);
         anchorPane.setId("centerTaskPane");
@@ -274,7 +294,11 @@ public class ListController {
             radioButton.getParent().setStyle("");
     }
 
-    public ListManager getListManager() {
-        return listManager;
+    public ListModel findListModel() {
+        return toDoListController.getToDoListModel().findList(listName);
+    }
+
+    public ListModel getListModel() {
+        return toDoListController.getToDoListModel().getList(listName);
     }
 }

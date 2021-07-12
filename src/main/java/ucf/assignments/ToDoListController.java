@@ -31,8 +31,8 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 
 public class ToDoListController {
-    private Database database;
-    private ToDoList toDoList;
+    private final Database database;
+    private ToDoListModel toDoList;
 
     @FXML
     TextField topSearchBar;
@@ -65,12 +65,13 @@ public class ToDoListController {
     private AnchorPane listView;
     private ListController listController;
 
+    public ToDoListController() {
+        database = new Database();
+        toDoList = new ToDoListModel(database);
+    }
+
     @FXML
     public void initialize() {
-        database = new Database();
-
-        toDoList = new ToDoList(database);
-
         toDoList.getLists().forEach(listManager -> createLeftListBtn(listManager.getListName()));
 
         mainPane.setOnMouseClicked(this::setFocusResetOnMouseClick);
@@ -153,7 +154,7 @@ public class ToDoListController {
 
         //removes all already existing entries
         leftScrollPaneVBox.getChildren().removeAll(leftScrollPaneVBox.getChildren());
-        toDoList = new ToDoList(database);
+        toDoList = new ToDoListModel(database);
     }
 
     @FXML
@@ -204,7 +205,8 @@ public class ToDoListController {
             if (mainPane.getRight() != null)
                 hideNode(mainPane.getRight());
 
-            createListView(toDoList.findList(eventBtn.getText()));
+                createListView(toDoList.findList(eventBtn.getText()).getListName());
+//            createListView(toDoList.findList(eventBtn.getText()));
 
             mainPane.centerProperty().set(listView);
         }
@@ -232,7 +234,7 @@ public class ToDoListController {
                 if (unfocused) {
                     if (!textField.getText().isEmpty()) {
                         try {
-                            toDoList.addList(textField.getText());
+                            toDoList.addLst(new ListModel(textField.getText()));
 
                             createLeftListBtn(textField.getText());
 
@@ -278,9 +280,9 @@ public class ToDoListController {
         toDoList.getLists().forEach(listManager -> createLeftListBtn(listManager.getListName()));
     }
 
-    private void createListView(ListManager listManager) {
+    private void createListView(String listName) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("listView.fxml"));
-        listController = new ListController(listManager, this);
+        listController = new ListController(listName, this);
         fxmlLoader.setControllerFactory(ListController -> listController);
         try {
             listView = fxmlLoader.load();
@@ -317,7 +319,6 @@ public class ToDoListController {
         node.setManaged(true);
     }
 
-    //Final Version, puts style on button press/release
     protected static void btnStyle(MouseEvent event, String style) {
         Node btn = ((Node) event.getSource());
 
@@ -330,12 +331,11 @@ public class ToDoListController {
         }
     }
 
-
     protected void setCenterPropertyToDefault() {
         mainPane.centerProperty().set(null);
     }
 
-    protected ToDoList getToDoList() {
+    protected ToDoListModel getToDoListModel() {
         return toDoList;
     }
 

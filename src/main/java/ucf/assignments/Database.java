@@ -24,8 +24,8 @@ public class Database {
         this.filePath = connectionStringPrefix + connection;
     }
 
-    public SortedSet<ListManager> getLists() {
-        var lists = new TreeSet<ListManager>();
+    public SortedSet<ListModel> getLists() {
+        var lists = new TreeSet<ListModel>();
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(filePath);
@@ -37,7 +37,7 @@ public class Database {
                 int id = resultSet.getInt("ROWID");
                 String name = resultSet.getString("list_name");
 
-                lists.add(new ListManager(name, id, getTasks(name)));
+                lists.add(new ListModel(name, id, getTasks(name)));
             }
 
         } catch (SQLException e) {
@@ -55,8 +55,8 @@ public class Database {
         return lists;
     }
 
-    public SortedSet<Task> getTasks(String listName) {
-        var tasks = new TreeSet<Task>();
+    public SortedSet<TaskModel> getTasks(String listName) {
+        var tasks = new TreeSet<TaskModel>();
         Connection connection = null;
 
         try {
@@ -66,7 +66,7 @@ public class Database {
             ResultSet resultSet = statement.executeQuery(String.format("SELECT ROWID, task_name, task_state, task_due_date, task_note FROM Tasks WHERE list_name = '%s'", listName));
 
             while (resultSet.next()) {
-                var task = new Task(resultSet.getString("task_name"));
+                var task = new TaskModel(resultSet.getString("task_name"));
 
                 task.setId(resultSet.getInt("ROWID"));
                 task.setCompletionState(resultSet.getInt("task_state") == 1);
@@ -91,7 +91,7 @@ public class Database {
         return tasks;
     }
 
-    public void updateList(ListManager listManager) {
+    public void updateList(ListModel listManager) {
         Connection connection = null;
 
         try {
@@ -118,7 +118,7 @@ public class Database {
         }
     }
 
-    public void deleteList(ListManager listManager) {
+    public void deleteList(ListModel listManager) {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(filePath);
@@ -139,7 +139,7 @@ public class Database {
 
     }
 
-    public void updateTask(Task task, String listName) {
+    public void updateTask(TaskModel task, String listName) {
         Connection connection = null;
 
         try {
@@ -168,13 +168,13 @@ public class Database {
         }
     }
 
-    public void deleteTask(Task task) {
+    public void deleteTask(TaskModel task) {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(filePath);
             Statement statement = connection.createStatement();
 
-            statement.execute(String.format("DELETE FROM Tasks WHERE ROWID = '%d'", task.getId()));
+            statement.execute(String.format("DELETE FROM Tasks WHERE ROWID = %d", task.getId()));
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
