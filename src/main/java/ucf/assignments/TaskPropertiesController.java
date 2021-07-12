@@ -38,7 +38,7 @@ public class TaskPropertiesController {
 
     public void initialize() {
 
-        rightTaskNameField.setText(listController.findListModel().getListName());
+        rightTaskNameField.setText(taskName);
 
         rightAddNoteField.setText(listController.findListModel().findTask(taskName).getDescription());
 
@@ -56,21 +56,6 @@ public class TaskPropertiesController {
             createDueDateClearBtn();
         }else
             rightAddDueDateBtn.setText("Add Due Date");
-
-        rightAddDueDateBtn.setOnMouseClicked(event -> {
-            hideNode(rightAddDueDateBtn.getParent());
-            VBox calendar = createCalendar(rightDueDateAndNoteVBox);
-            rightDueDateAndNoteVBox.getChildren().add(calendar);
-        });
-
-        rightDeleteBtn.setOnMouseReleased(event -> {
-            listController.getListModel().deleteTask(taskName);
-
-            rightBackBtnClicked(event);
-            listController.taskScrollPaneVBox.getChildren().remove(((Node)event.getSource()).getParent());
-            listController.updateTaskScrollPane();
-        });
-
     }
 
     protected void setDueDateClearBtn(MouseEvent event) {
@@ -83,7 +68,6 @@ public class TaskPropertiesController {
 
             rightAddDueDatePane.getChildren().remove(clear);
             listController.getListModel().getTask(taskName).setDueDate(null);
-//            taskModel.setDueDate(null);
         }
     }
 
@@ -137,11 +121,25 @@ public class TaskPropertiesController {
     @FXML
     public void rightAddDueDateBtnClicked(MouseEvent event) {
         btnStyle(event, "-fx-padding: 0 0 0 20; -fx-font-size: 12");
+
+        if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+            hideNode(rightAddDueDateBtn.getParent());
+            VBox calendar = createCalendar(rightDueDateAndNoteVBox);
+            rightDueDateAndNoteVBox.getChildren().add(calendar);
+        }
     }
 
     @FXML
     public void rightDeleteBtnClicked(MouseEvent event) {
         btnStyle(event, "-fx-padding: 0 16 0 0;");
+
+        if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+            listController.getListModel().deleteTask(taskName);
+
+            rightBackBtnClicked(event);
+            listController.taskScrollPaneVBox.getChildren().remove(((Node) event.getSource()).getParent());
+            listController.updateTaskScrollPane();
+        }
     }
 
     protected void createDueDateClearBtn() {

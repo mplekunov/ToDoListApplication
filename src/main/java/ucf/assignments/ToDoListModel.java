@@ -75,6 +75,7 @@ public class ToDoListModel {
                 .findFirst().orElseThrow(null);
 
         lists.replace(mapped, DataState.Removed);
+        mapped.deleteAllTasks();
         mapped.clear();
     }
 
