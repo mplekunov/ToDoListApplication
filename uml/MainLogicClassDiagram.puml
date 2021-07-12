@@ -1,30 +1,32 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class ToDoList {
-    -Map<ListManager, DataState> lists
+class ToDoListModel {
+    -Map<ListModel, DataState> lists
 
-    +ToDoList(DataState db)
+    +ToDoListModel(DataState db)
 
-    +findList(String):ListManager
-    +addList(String):void
-    +changeListName(String, String):void
-    +deleteList(String)
-    +upload:void
-    +getLists():List<ListManager>
+    +findList(String):ListModel
+    +getList(ListModel):ListModel
+    +findList(String):ListModel
+    +addList(ListModel):void
+    +deleteList(String):void
+    +deleteList(ListModel):void
+    +upload(Database):void
+    +getLists():TreeSet<ListModel>
 }
 
 class Application {}
 
-class Task implements Comparable {
+class TaskModel implements Comparable {
     -String name
     -LocalDate dueDate
     -String description
     -boolean isCompleted
     -Integer id
 
-    +Task(String)
-    +Task(String, LocalDate, String)
+    +TaskModel(String)
+    +TaskModel(String, LocalDate, String)
 
     +setName(String):void
     +setDueDate(LocalDate):void
@@ -41,18 +43,21 @@ class Task implements Comparable {
 
 class TaskPropertiesController {
     -ListController listController
-    -Task task
+    -String taskName
+    -AnchorPane taskPropertiesView
 
-    +TaskPropertiesController(Task, ListController)
+    +TaskPropertiesController(String, ListController)
     +initialize:void
 
-    #setDueDateClearBtn():void
-    +rightBackBtnClicked():void
-    +rightAddDueDateBtnClicked():void
-    +rightDeleteBtnClicked():void
-    +createDueDateClearBtn()
-    +createCalendarBtn(String):Button
-    +createCalendar(Pane,Task):VBox
+    #setClickOnDueDateClearButton():void
+    #setClickOnTaskNameField():void
+    +setClickOnDueDateButton():void
+    +setClickOnDeleteButton():void
+    #createDueDateClearButton():void
+    #createCalendarButton(String):Button
+    #createCalendarPane(Pane):VBox
+    +setTaskPropertiesView(AnchorPane):void
+    +getTaskPropertiesViews():AnchorPane
 }
 
 class DateFormatter {
@@ -65,10 +70,9 @@ class DateFormatter {
 }
 
 class ToDoListController {
-    -AnchorPane todayView
-    -Database database
-    -ToDoList todoList
-    -ListController listController
+    -Database database;
+    -TodoListModel todoListModel
+    -HashMap<String, ListController> listViews;
 
     +initialize():void
 
@@ -77,84 +81,81 @@ class ToDoListController {
     -exportDatabaseFile():void
     -importDatabaseFile():void
     +exitApplication():void
-    -setFocusResetOnEnterPressed():void
-    -topSearchBarReleased():void
-    -leftShownListsBtnClicked():void
-    -leftListBtnClicked():void
-    -leftNewListBtnClicked():void
-    #initTextFieldValidator(TextField):ContextMenu
-    #updateListScrollPane():void
-    -createListView(ListManager):void
-    -createLeftListBtn(String):void
+    -setFocusOnMainPaneWhenEnterKeyPressed():void
+    +setClickOnSearchBarTextField():void
+    +setClickOnShowListButton():void
+    +setClickOnListButton():void
+    +setClickOnNewListButton():void
+    #initTextFieldValidatior(TextField, String):ContextMenu
+    #reloadListScrollPane():void
+    -createListView(String):ListController
 
     #setAnchorProperty(Node, Double, Double, Double, Double):void
     #hideNode(Node):void
     #showNode(Node):void
-    #btnStyle(MouseEvent, String):void
-
+    #applyButtonStyle(MouseEvent, String):void
     #setCenterPropertyToDefault():void
-    #getToDoList():ToDoList
-    -setFocusResetOnMouseClick():void
+    #getToDoListModel():ToDoListModel
+    -setFocusOnMainPaneWhenMouseClicked():void
+    +getListView(String):AnchorPane
 }
 
-class ListManager implements Comparable {
+class ListModel implements Comparable {
     -String listName
     -Integer id
-    -Map<Task, DataState> tasks
+    -Map<TaskModel, DataState> tasks
 
-    +ListManager(String)
-    +ListManager(String, int, Set<Task> cachedTasks)
+    +ListModel(String)
+    +ListModel(String, int, Set<TaskModel> cachedTasks)
 
     +setListName(String):void
-    +setId(Integer):void
-    +findTask(String):Task
-    +addTask(String):void
-    +changeTaskName(String, String):void
-    +changeTaskCompletionState(String, state):void
-    +changeTaskDueDate(String, LocalDate):void
-    +changeTaskNote(String, String):void
-    +deleteTask:void
-    +upload:void
+    +getTask(String):TaskModel
+    +getTask(TaskModel):TaskModel
+    +findTask(String):TaskModel
+    +addTask(TaskModel):void
+    +deleteTask(TaskModel):void
+    +deleteTask(String):void
+    +deleteAllTasks():void
+    +upload(Database):void
+    +clear():void
 
     +getId():Integer
     +getListName():String
-    +getAllTasks():List<Task>
-    +getCompletedTasks():List<Task>
-    +getInProgressTasks():List<Task>
+    +getAllTasks():List<TaskModel>
+    +getCompletedTasks():List<TaskModel>
+    +getInProgressTasks():List<TaskModel>
 }
 
 
 class ListController {
-    -ToDoListController toDoListController
-    -ListManager listManager
-    -TaskPropertiesController taskProperties
+    +ToDoListController toDoListController
+    -HashMap<String, TaskPropertiesController> taskPropertiesView
+    -String listName
+    -AnchorPane listView
 
-    +ListController(ListManager, ToDoListController)
+    +ListController(String, ToDoListController)
     +initialize():void
 
-    #updateTaskScrollPane():void
-    +listNameFieldClicked:void
-    +menuShowAllClicked:void
-    +menuShowCompletedClicked:void
-    +menuShowInProgressClicked:void
-    +menuDeleteAllTasksClicked:void
-    +menuDeleteListClicked:void
-    +centerTaskBtnClicked:void
-    -createTaskPropertiesView(Task):void
-    +centerTaskRadioBtnClicked(MouseEvent, String):void
-    +centerNewTaskBtnClicked(MouseEvent):void
-    -setTaskProgressBar():void
-    #createTaskBtn(String):void
-    -taskPaneStyle(RadioButton):void
-    +getListManager():ListManager
-}
+    #reloadTaskScrollPane():void
+    +setClickOnListNameField():void
+    +setClickOnMenuShowAll():void
+    +setClickOnMenuShowCompleted():void
+    +setClickOnMenuShowInProgress():void
+    +setClickOnMenuDeleteAllTasks():void
+    +setClickOnMenuDeleteList():void
+    +setClickOnTaskButton(MouseEvent, String):void
+    -createTaskPropertiesView(String):TaskPropertiesController
+    +setClickOnTaskRadioButton(MouseEvent, String):void
+    +setClickOnNewTaskButton():void
+    +setTaskProgressBar():void
+    #createTaskButton(TaskModel):void
+    -applyTaskPaneStyle(RadioButton):void
+    +findListModel():ListModel
+    +getListModel():ListModel
+    +setListView(AnchorPane):void
+    +getListView():AnchorPane
+    +getTaskPropertiesViews():HashMap<String, TaskPropertiesController>
 
-class DayController {
-    -String labelName
-
-    +DayController(String, ToDoListController)
-
-    +initialize()
 }
 
 class Database {
@@ -165,11 +166,11 @@ class Database {
 
     +getFilePath():String
     +setCollection(String):void
-    +getList():SortedSet<ListManager>
-    +getTasks(String listName):SortedSet<Task>
-    +updateList(ListManager):void
-    +deleteList(ListManager):void
-    +updateTask(Task, String):void
+    +getList():SortedSet<ListModel>
+    +getTasks(String listName):SortedSet<TaskModel>
+    +updateListListModel:void
+    +deleteListListModel:void
+    +updateTask(TaskModel, String):void
     +deleteTask(Task):void
 }
 
@@ -179,19 +180,26 @@ enum DataState {
     Removed
 }
 
-ListManager *-- Task
-ListManager *-- DataState
-ListManager o-- Database
-ToDoList *-- ListManager
-ToDoList *-- DataState
-ToDoList o-- Database
+Application *--ToDoListController
 
-ToDoListController *-- Database
-ToDoListController *-- ToDoList
-ListController o-- ToDoListController
-ListController *-- ListManager
-ListController *-- TaskPropertiesController
+ToDoListController *--- Database
+ToDoListController *--- ToDoListModel
+ToDoListController *- ListController
 
-Application *-- ToDoListController
+ListController *--- TaskPropertiesController
+ListController o--- ToDoListController
+ListController *--- ListModel
+ListController *--- TaskModel
+
+TaskPropertiesController o---- ListController
+TaskPropertiesController --- DateFormatter
+
+ToDoListModel *- DataState
+ToDoListModel *-- ListModel
+ToDoListModel -- Database
+
+ListModel *--- TaskModel
+ListModel *--- DataState
+ListModel ---- Database
 
 @enduml

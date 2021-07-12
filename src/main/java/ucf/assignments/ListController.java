@@ -71,6 +71,13 @@ public class ListController {
         centerListNameField.setText(listModel.getListName());
         listModel.getAllTasks().forEach(this::createTaskButton);
         setTaskProgressBar();
+
+        centerTaskScrollPane.setOnScroll(event -> {
+            double deltaY = event.getDeltaY() * 15;
+            double width = centerTaskScrollPane.getContent().getBoundsInLocal().getWidth();
+            double vvalue = centerTaskScrollPane.getVvalue();
+            centerTaskScrollPane.setVvalue(vvalue + -deltaY/width);
+        });
     }
 
     protected void reloadTaskScrollPane() {
@@ -84,7 +91,6 @@ public class ListController {
         listModel.getAllTasks().forEach(this::createTaskButton);
     }
 
-    //DOESN'T WORK
     @FXML
     public void setClickOnListNameField(MouseEvent event) {
         TextField textField = (TextField) event.getSource();
@@ -213,6 +219,8 @@ public class ListController {
             applyTaskPaneStyle(radioButton);
 
             setTaskProgressBar();
+
+            reloadTaskScrollPane();
         }
     }
 

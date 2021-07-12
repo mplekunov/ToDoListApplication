@@ -239,6 +239,4 @@ public class TaskPropertiesController {
     public AnchorPane getTaskPropertiesView() {
         return taskPropertiesView;
     }
-
-
 }

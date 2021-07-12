@@ -137,8 +137,8 @@ public class ListModel implements Comparable {
         return tasks.entrySet().stream()
                 .filter(entry -> !entry.getValue().equals(DataState.Removed))
                 .map(Map.Entry::getKey)
-                .sorted(Comparator.comparing(TaskModel::getCompletionState).reversed()
-                        .thenComparing(TaskModel::getName))
+                .sorted(Comparator.comparing(TaskModel::getCompletionState)
+                    .thenComparing(TaskModel::getName))
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 

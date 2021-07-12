@@ -80,7 +80,7 @@ public class ToDoListController {
     public void initialize() {
         toDoListModel.getLists().forEach(listManager -> createListButton(listManager.getListName()));
 
-        mainPane.setOnMouseClicked(this::setFocusOnMainPainWhenMouseClicked);
+        mainPane.setOnMouseClicked(this::setFocusOnMainPaneWhenMouseClicked);
         mainPane.setOnKeyReleased(this::setFocusOnMainPaneWhenEnterKeyPressed);
         topMenuExit.setOnAction(this::exitApplication);
         topMenuImport.setOnAction(this::importDatabaseFile);
@@ -89,6 +89,13 @@ public class ToDoListController {
 
         initDayViewBtn(leftTodayBtn, "Today", LocalDate.now());
         initDayViewBtn(leftTomorrowBtn, "Tomorrow", LocalDate.now().plusDays(1));
+
+        leftScrollPane.setOnScroll(event -> {
+            double deltaY = event.getDeltaY() * 15;
+            double width = leftScrollPane.getContent().getBoundsInLocal().getWidth();
+            double vvalue = leftScrollPane.getVvalue();
+            leftScrollPane.setVvalue(vvalue + -deltaY/width);
+        });
 
         mainPane.centerProperty().set(null);
     }
@@ -152,6 +159,8 @@ public class ToDoListController {
     }
 
     private void importDatabaseFile(ActionEvent actionEvent) {
+        toDoListModel.upload(database);
+
         FileChooser fileChooser = new FileChooser();
 
         String appDir = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -170,6 +179,7 @@ public class ToDoListController {
 
         //removes all already existing entries
         leftScrollPaneVBox.getChildren().removeAll(leftScrollPaneVBox.getChildren());
+        mainPane.centerProperty().set(null);
         toDoListModel = new ToDoListModel(database);
     }
 
@@ -302,6 +312,8 @@ public class ToDoListController {
                                 leftShowListsBtn.fire();
                                 setClickOnShowListsButton(event);
                             }
+
+                            mainPane.centerProperty().set(listViews.get(textField.getText()).getListView());
                         } catch (NullPointerException e) {
                             textField.getParent().setStyle("-fx-border-color: red; -fx-background-color: rgb(123, 132, 146);");
                             errorPopup.getItems().clear();
@@ -413,7 +425,7 @@ public class ToDoListController {
         return toDoListModel;
     }
 
-    private void setFocusOnMainPainWhenMouseClicked(InputEvent mouseEvent) {
+    private void setFocusOnMainPaneWhenMouseClicked(InputEvent mouseEvent) {
         if (mouseEvent.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
             Node node = (Node) mouseEvent.getSource();
             node.requestFocus();
