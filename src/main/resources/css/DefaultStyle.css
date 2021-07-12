@@ -1,4 +1,31 @@
 /*DEFAULT*/
+.context-menu {
+    -fx-background-color: grey;
+    -fx-border-color: grey;
+    -fx-background-radius: 20 20 20 0;
+    -fx-border-radius: 20 20 20 0;
+}
+
+.context-menu .menu-item .label {
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+}
+
+.context-menu .menu-item
+{
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+
+}
+
+.context-menu .menu-item:hover {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+
+}
+
 .menu-bar, .menu-bar .menu:hover, .menu-bar .menu:showing {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -50,4 +77,23 @@
     -fx-background-radius: 0;
     -fx-border-insets: 0;
     -fx-background-insets: 0;
+}
+.progress-bar {
+    -fx-indeterminate-bar-escape: true;
+    -fx-indeterminate-bar-flip: true;
+    -fx-indeterminate-bar-animation-time: 2;
+}
+.progress-bar > .bar {
+    -fx-background-color: rgb(255, 196, 155);
+    -fx-background-insets: 1;
+    -fx-background-radius: 10;
+    -fx-padding: 0;
+}
+.progress-bar:indeterminate > .bar {
+    -fx-background-color: linear-gradient(to left, transparent, -fx-accent);
+}
+.progress-bar > .track {
+    -fx-background-color: rgb(235, 176, 135);
+    -fx-background-insets: 0;
+    -fx-background-radius: 10; /* 10, 9, 8 */
 }

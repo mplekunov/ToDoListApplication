@@ -1,3 +1,30 @@
+#TaskNameBtnContextMenu {
+    -fx-background-color: grey;
+    -fx-border-color: grey;
+    -fx-background-radius: 20 20 0 20;
+    -fx-border-radius: 20 20 0 20;
+}
+
+#TaskNameBtnContextMenu .menu-item
+{
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+
+}
+
+#TaskNameBtnContextMenu .menu-item:hover {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+}
+
+#TaskNameBtnContextMenu .menu-item .label {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+}
+
 /*CENTER PANE START*/
 #center .root, #center {
     -fx-background-color: rgb(249, 240, 242);
@@ -26,16 +53,7 @@
     -fx-border-color: rgb(209,200,201);
 }
 
-#centerTaskProgressBar .bar, #centerTaskProgressBar {
-    -fx-background-radius: 12;
-    -fx-background-color: rgb(41, 76, 96);
-}
-
-#centerTaskProgressBar .track {
-    -fx-background-color: transparent;
-}
-
-#centerNewTaskBtn {
+#centerNewTaskPane {
     -fx-background-color: rgb(173, 182, 196);
     -fx-border-color: rgb(153, 162, 174);
     -fx-border-radius: 8;
@@ -43,7 +61,7 @@
     -fx-border-style: solid;
 }
 
-#centerNewTaskBtn:hover {
+#centerNewTaskPane:hover {
     -fx-background-color: rgb(143, 152, 166);
     -fx-border-color: rgb(123, 132, 146);
 }
@@ -83,5 +101,11 @@
 
 #centerTaskRadioBtn:selected {
     -fx-background-image: url("../icons/checked.png");
+}
+
+#centerTaskBtn {
+    -fx-alignment: baseline-left;
+    -fx-min-height: 40;
+    -fx-padding: 0 0 0 20;
 }
 /*CENTER PANE END*/

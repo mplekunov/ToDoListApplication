@@ -5,164 +5,186 @@
 
 package ucf.assignments;
 
-import java.nio.channels.NotYetConnectedException;
 import java.sql.*;
 import java.util.*;
 
 public class Database {
-    private Statement statement;
+    private final String connectionStringPrefix = "jdbc:sqlite:";
+    private String filePath;
 
-    public Database() {}
+    public Database() {
+        filePath = connectionStringPrefix + "ToDoListDB.sqlite";
+    }
 
-    public void connect() {
-        if (statement != null) {
-            Connection connection;
+    public String getFilePath() {
+        return filePath.substring(connectionStringPrefix.length());
+    }
 
+    public void setConnection(String connection) {
+        this.filePath = connectionStringPrefix + connection;
+    }
+
+    public SortedSet<ListManager> getLists() {
+        var lists = new TreeSet<ListManager>();
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(filePath);
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("SELECT ROWID, list_name FROM Lists");
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("ROWID");
+                String name = resultSet.getString("list_name");
+
+                lists.add(new ListManager(name, id, getTasks(name)));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
             try {
-                connection = DriverManager.getConnection("jdbc:sqlite:ToDoListDB.sqlite");
-                statement = connection.createStatement();
-                statement.executeQuery("PRAGMA foreign_keys = on");
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+
+        return lists;
+    }
+
+    public SortedSet<Task> getTasks(String listName) {
+        var tasks = new TreeSet<Task>();
+        Connection connection = null;
+
+        try {
+            connection = DriverManager.getConnection(filePath);
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(String.format("SELECT ROWID, task_name, task_state, task_due_date, task_note FROM Tasks WHERE list_name = '%s'", listName));
+
+            while (resultSet.next()) {
+                var task = new Task(resultSet.getString("task_name"));
+
+                task.setId(resultSet.getInt("ROWID"));
+                task.setCompletionState(resultSet.getInt("task_state") == 1);
+                task.setDueDate(DateFormatter.stringToDate(resultSet.getString("task_due_date")));
+                task.setDescription(resultSet.getString("task_note"));
+
+                tasks.add(task);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+
+        return tasks;
+    }
+
+    public void updateList(ListManager listManager) {
+        Connection connection = null;
+
+        try {
+            connection = DriverManager.getConnection(filePath);
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(String.format("SELECT * FROM Lists WHERE ROWID = %d", listManager.getId()));
+
+            if (resultSet.next())
+                statement.execute(String.format("UPDATE Lists SET list_name = '%s' WHERE ROWID = %d", listManager.getListName(), listManager.getId()));
+            else
+                statement.execute(String.format("INSERT INTO Lists VALUES ('%s')", listManager.getListName()));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
         }
     }
 
-    public void disconnect() {
+    public void deleteList(ListManager listManager) {
+        Connection connection = null;
         try {
-            statement.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
+            connection = DriverManager.getConnection(filePath);
+            Statement statement = connection.createStatement();
 
-    public boolean findList(String name) throws NoSuchElementException, NotYetConnectedException {
-        isConnected();
-
-        ResultSet rs = null;
-        try {
-            rs = statement.executeQuery(String.format("SELECT name FROM ToDoLists WHERE ToDoLists.name = %s", name));
+            statement.execute(String.format("DELETE FROM Lists WHERE ROWID = %d", listManager.getId()));
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-
-        return rs != null;
-    }
-
-    public List<String> getAllLists() throws NoSuchElementException, NotYetConnectedException {
-        isConnected();
-
-        var allLists = new LinkedList<String>();
-
-        try {
-            ResultSet rs = statement.executeQuery("SELECT name FROM ToDoLists");
-
-            while (rs.next())
-                allLists.add(rs.getString("name"));
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-
-        return allLists;
-    }
-
-    public List<Task> getList(String name) throws NoSuchElementException, NotYetConnectedException {
-        isConnected();
-
-        var tasks = new LinkedList<Task>();
-
-        try {
-            ResultSet rs = statement.executeQuery(String.format("SELECT Tasks.name, Tasks.state, Tasks.due_date, Tasks.note FROM Tasks WHERE Tasks.list_name = '%s'", name));
-
-            while (rs.next()) {
-                Task task = new Task();
-
-                task.setName(rs.getString("name"));
-                task.setState(rs.getInt("state"));
-                task.setDueDate(rs.getDate("due_date)").toLocalDate());
-                task.setDescription(rs.getString("note"));
-
-                tasks.add(task);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
         }
 
-        return tasks;
     }
 
-    public ResultSet setList(String name) throws NotYetConnectedException {
-        isConnected();
-
-        ResultSet rs = null;
-        try {
-            rs = statement.executeQuery(String.format("INSERT INTO ToDoLists VALUES (%s)", name));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-
-        return rs;
-    }
-
-    public ResultSet setTask(String listName, Task task) throws NotYetConnectedException {
-        isConnected();
-
-        ResultSet rs = null;
-        try {
-            rs = statement.executeQuery(String.format("INSERT INTO Tasks VALUES (%s, %d, %s %s %s)",
-                    task.getName(), task.getState(), task.getDueDate(), task.getDescription(), listName));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-
-        return rs;
-    }
-
-    public void removeTask(String name) throws NotYetConnectedException {
-        isConnected();
+    public void updateTask(Task task, String listName) {
+        Connection connection = null;
 
         try {
-            statement.executeQuery(String.format("DELETE FROM Tasks WHERE Tasks.name = %S", name));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            connection = DriverManager.getConnection(filePath);
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(String.format("SELECT * FROM Tasks WHERE ROWID = %d", task.getId()));
+
+            if (resultSet.next()) {
+                statement.execute(String.format("UPDATE Tasks SET task_name = '%s', task_state = %d, task_due_date = '%s', task_note = '%s' WHERE ROWID = %d",
+                        task.getName(), task.getCompletionState() ? 1 : 0, DateFormatter.dateToString(task.getDueDate()), task.getDescription(), task.getId()));
+            } else {
+                statement.execute(String.format("INSERT INTO Tasks VALUES ('%s', %d, '%s', '%s', '%s')",
+                        task.getName(), task.getCompletionState() ? 1 : 0, DateFormatter.dateToString(task.getDueDate()), task.getDescription(), listName));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
     }
 
-    public void removeList(String name) throws NotYetConnectedException {
-        isConnected();
-
+    public void deleteTask(Task task) {
+        Connection connection = null;
         try {
-            statement.executeQuery(String.format("DELETE FROM ToDoLists WHERE ToDoLists.name = %s", name));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            connection = DriverManager.getConnection(filePath);
+            Statement statement = connection.createStatement();
+
+            statement.execute(String.format("DELETE FROM Tasks WHERE ROWID = '%d'", task.getId()));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
-    }
-
-    public void updateTask(Task task) throws NotYetConnectedException {
-        isConnected();
-
-        try {
-            statement.executeQuery(String.format("UPDATE Tasks SET Tasks.name = %s, Tasks.state = %d, Tasks.due_date = %s, Tasks.note = %s",
-                    task.getName(), task.getState(), task.getDueDate(), task.getDescription()));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-
-    public void updateList(String name) throws NotYetConnectedException {
-        isConnected();
-
-        try {
-            statement.executeQuery(String.format("UPDATE ToDoLists SET ToDoLists.name = %s", name));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-
-    private void isConnected() throws NotYetConnectedException {
-        if (statement == null)
-            throw new NotYetConnectedException();
     }
 }

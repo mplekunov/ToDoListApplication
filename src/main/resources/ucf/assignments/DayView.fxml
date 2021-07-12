@@ -28,7 +28,7 @@
             </AnchorPane>
             <ScrollPane id="centerTaskScrollPane" fx:id="centerTaskScrollPane" fitToWidth="true">
                <content>
-                  <VBox spacing="20.0">
+                  <VBox fx:id="centerDayVBox" spacing="20.0">
                      <children>
                         <AnchorPane minHeight="40.0" styleClass="pane">
                            <VBox.margin>

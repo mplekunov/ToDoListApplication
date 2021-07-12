@@ -8,19 +8,24 @@ package ucf.assignments;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Task {
+public class Task implements Comparable {
     private String name;
     private LocalDate dueDate;
     private String description;
-    private int state;
-    public Task() {
-        this.name = "";
-        this.dueDate = null;
-        this.description = "";
-        this.state = 0;
+    private boolean isCompleted;
+    private Integer id;
+
+    public Task(String name) {
+        this.name = name;
+        dueDate = null;
+        description = "";
+        isCompleted = false;
+        id = null;
     }
 
     public Task(String name, LocalDate dueDate, String description) {
+        this(name);
+
         this.name = name;
         this.dueDate = dueDate;
         this.description = description;
@@ -38,12 +43,16 @@ public class Task {
         this.description = description;
     }
 
-    public void setState(int state) {
-        this.state = state;
+    public void setCompletionState(boolean isCompleted) {
+        this.isCompleted = isCompleted;
     }
 
-    public int getState() {
-        return state;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public boolean getCompletionState() {
+        return isCompleted;
     }
 
     public LocalDate getDueDate() {
@@ -58,16 +67,26 @@ public class Task {
         return name;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return name.equals(task.name);
+        return Objects.equals(name, task.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, state);
+        return Objects.hash(id);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Task that = (Task) o;
+        return name.compareTo(that.getName());
     }
 }

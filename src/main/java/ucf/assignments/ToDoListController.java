@@ -5,131 +5,174 @@
 
 package ucf.assignments;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.BoxBlur;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.InputEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
+
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 
 public class ToDoListController {
-    private List<ListStructure> listCollection;
+    private Database database;
+    private ToDoList toDoList;
 
-    @FXML TextField topSearchBar;
+    @FXML
+    TextField topSearchBar;
+    @FXML
+    MenuItem topMenuImport;
+    @FXML
+    MenuItem topMenuExport;
+    @FXML
+    MenuItem topMenuExit;
 
-    @FXML Button leftTodayBtn;
-    @FXML Button leftTomorrowBtn;
-    @FXML Button leftNextSevenDaysBtn;
-    @FXML ToggleButton leftShowListsBtn;
-    @FXML ScrollPane leftScrollPane;
-    @FXML Button leftNewListBtn;
+    @FXML
+    Button leftTodayBtn;
+    @FXML
+    Button leftTomorrowBtn;
+    @FXML
+    Button leftNextSevenDaysBtn;
+    @FXML
+    ToggleButton leftShowListsBtn;
+    @FXML
+    ScrollPane leftScrollPane;
+    @FXML
+    VBox leftScrollPaneVBox;
+    @FXML
+    AnchorPane leftNewListPane;
+    @FXML
+    Button leftNewListBtn;
 
-    @FXML TextField rightTaskNameField;
-    @FXML Button rightAddDueDateBtn;
-    @FXML TextArea rightAddNoteField;
-    @FXML Button rightBackBtn;
-    @FXML Button rightDeleteBtn;
-
-    @FXML BorderPane mainPane;
-    private AnchorPane todayView;
-    private AnchorPane tomorrowView;
-    private AnchorPane nextSevenDaysView;
+    @FXML
+    BorderPane mainPane;
     private AnchorPane listView;
+    private ListController listController;
 
-    //final implementation will be different, for now it just loads different scenes just to prove that everything works
-    @FXML public void initialize() {
-        //The line below will create a new database object with specified file path
-        //when database object will be created I will be able to use information from database
-        //for initialization of fields in scenes (e.g. passing this info to controllers)
-        //database = new Database()
+    @FXML
+    public void initialize() {
+        database = new Database();
 
-        //Code below is there just for the sake of testing transition between scenes
-        //It won't be structured in that way in the final version
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DayView.fxml"));
-        fxmlLoader.setControllerFactory(DayController -> new DayController("Today!", this));
+        toDoList = new ToDoList(database);
+
+        toDoList.getLists().forEach(listManager -> createLeftListBtn(listManager.getListName()));
+
+        mainPane.setOnMouseClicked(this::setFocusResetOnMouseClick);
+        mainPane.setOnKeyReleased(this::setFocusResetOnEnterPressed);
+        topMenuExit.setOnAction(this::exitApplication);
+        topMenuImport.setOnAction(this::importDatabaseFile);
+        topMenuExport.setOnAction(this::exportDatabaseFile);
+
+
+        initDayViewBtn(leftTodayBtn, "Today", LocalDate.now());
+        initDayViewBtn(leftTomorrowBtn, "Tomorrow", LocalDate.now().plusDays(1));
+
+        mainPane.centerProperty().set(null);
+    }
+
+    private void initDayViewBtn(Button dayBtn, String btnText, LocalDate date) {
+        dayBtn.setGraphic(dateToIconConverter(date));
+
+        dayBtn.setGraphicTextGap(20);
+        dayBtn.setContentDisplay(ContentDisplay.LEFT);
+        dayBtn.setAlignment(Pos.BASELINE_LEFT);
+        dayBtn.minHeight(40);
+        setAnchorProperty(dayBtn, 0d, 0d, 0d, 0d);
+        dayBtn.setId("dayViewBtn");
+    }
+
+    private ImageView dateToIconConverter(LocalDate date) {
+        String icon_path = "/icons/Calendar/calendar-" + date.getDayOfMonth() + ".png";
+        Image img = new Image(getClass().getResource(icon_path).toString());
+        ImageView view = new ImageView(img);
+
+        view.setFitWidth(24);
+        view.setFitHeight(24);
+
+        return view;
+    }
+
+    private void exportDatabaseFile(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+
+        String appDir = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+
+        if (appDir.endsWith(".jar"))
+            appDir = new File(appDir).getParent();
+
+        fileChooser.setInitialDirectory(new File(appDir));
+
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("SQLite Database", "*.sqlite"));
+
+        toDoList.upload(database);
+
+        File file = fileChooser.showSaveDialog(mainPane.getScene().getWindow());
+
+        if (!file.getName().contains("."))
+            file = new File(file.getAbsolutePath() + ".sqlite");
+
         try {
-            todayView = fxmlLoader.load();
-        } catch (IOException e) {
+            Files.copy(Paths.get(database.getFilePath()), Path.of(file.getPath()));
+        } catch (java.io.IOException e) {
             e.printStackTrace();
         }
+    }
 
-        fxmlLoader = new FXMLLoader(getClass().getResource("DayView.fxml"));
-        fxmlLoader.setControllerFactory(DayController -> new DayController("Tomorrow!", this));
-        try {
-            tomorrowView = fxmlLoader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void importDatabaseFile(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
 
-        fxmlLoader = new FXMLLoader(getClass().getResource("DayView.fxml"));
-        fxmlLoader.setControllerFactory(DayController -> new DayController("Next 7 Days!", this));
-        try {
-            nextSevenDaysView = fxmlLoader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String appDir = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 
-        fxmlLoader = new FXMLLoader(getClass().getResource("listView.fxml"));
-        fxmlLoader.setControllerFactory(ListController -> new ListController("CurrentList", this));
-        try {
-            listView = fxmlLoader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        if (appDir.endsWith(".jar"))
+            appDir = new File(appDir).getParent();
 
-        listCollection =
-        mainPane.centerProperty().set(todayView);
+        fileChooser.setInitialDirectory(new File(appDir));
+
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SQLite Database", "*.sqlite"));
+
+        File selectedFile = fileChooser.showOpenDialog(null);
+
+        if (selectedFile != null)
+            database.setConnection(selectedFile.getAbsolutePath());
+
+        //removes all already existing entries
+        leftScrollPaneVBox.getChildren().removeAll(leftScrollPaneVBox.getChildren());
+        toDoList = new ToDoList(database);
+    }
+
+    @FXML
+    public void exitApplication(ActionEvent event) {
+        toDoList.upload(database);
+
+        Platform.exit();
+        System.exit(0);
+    }
+
+    private void setFocusResetOnEnterPressed(KeyEvent keyEvent) {
+        if (keyEvent.getCode() == KeyCode.ENTER)
+            mainPane.requestFocus();
     }
 
     @FXML
     public void topSearchBarReleased(MouseEvent event) {
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED))
-                topSearchBar.setText("");
-    }
-
-    @FXML
-    public void leftTodayBtnClicked(MouseEvent event) {
-        btnStyle(event, "-fx-padding: 0 0 0 40; -fx-font-size: 15");
-
-        if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED))
-            if (!mainPane.centerProperty().get().equals(todayView))
-                //gets collection of tasks which have today's due date
-                //if there are no tasks in a collection, shows an empty screen indicating that there are no tasks left for today
-                //else use DayController to initialize scene with the data from tasks collection
-                //shows that scene in the mainPane.center
-                mainPane.centerProperty().set(todayView);
-    }
-
-    @FXML
-    public void leftTomorrowBtnClicked(MouseEvent event) {
-        btnStyle(event, "-fx-padding: 0 0 0 40; -fx-font-size: 15");
-
-        if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED))
-            if (!mainPane.centerProperty().get().equals(tomorrowView))
-                //gets collection of tasks which have tomorrow's due date
-                //if there are no tasks in a collection, shows an empty screen indicating that there are no tasks left for tomorrow
-                //else use DayController to initialize scene with the data from tasks collection
-                //shows that scene in the mainPane.center
-                mainPane.centerProperty().set(tomorrowView);
-    }
-
-    @FXML
-    public void leftNextSevenDaysBtnClicked(MouseEvent event) {
-        btnStyle(event, "-fx-padding: 0 0 0 40; -fx-font-size: 15");
-
-        if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED))
-            if (!mainPane.centerProperty().get().equals(nextSevenDaysView))
-                //gets collection of tasks which have due date in the range of [today, next7Days)
-                //if there are no tasks in a collection, shows an empty screen indicating that there are no tasks left for that period
-                //else use DayController to initialize scene with the data from tasks collection
-                //shows that scene in the mainPane.center
-                mainPane.centerProperty().set(nextSevenDaysView);
+            topSearchBar.setText("");
     }
 
     @FXML
@@ -137,94 +180,146 @@ public class ToDoListController {
         btnStyle(event, "-fx-padding: 0 0 0 40; -fx-font-size: 13; -fx-graphic-text-gap: 160;");
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
-            //gets collection of lists
-            //fill ScrollPane with elements name
+            if (mainPane.getRight() != null)
+                hideNode(mainPane.getRight());
+
+            updateListScrollPane();
+
             if (leftScrollPane.visibleProperty().get()) {
                 leftScrollPane.setVisible(false);
                 leftScrollPane.setManaged(false);
             } else {
-              leftScrollPane.setVisible(true);
-              leftScrollPane.setManaged(true);
+                leftScrollPane.setVisible(true);
+                leftScrollPane.setManaged(true);
             }
         }
     }
 
-    //Temporary implementation, I will need to do a dynamic button creation
     @FXML
     public void leftListBtnClicked(MouseEvent event) {
         btnStyle(event, "-fx-padding: 0 0 0 30; -fx-font-size: 13;");
+        Button eventBtn = (Button) event.getSource();
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
-            //search for a the same name of the list in list collection as the text property of the pressed button
-            //use ListController to initialize scene with the data from the list
-            //show scene
+            if (mainPane.getRight() != null)
+                hideNode(mainPane.getRight());
+
+            createListView(toDoList.findList(eventBtn.getText()));
+
             mainPane.centerProperty().set(listView);
         }
     }
 
-    //I will probably just change button on the textField
     @FXML
     public void leftNewListBtnClicked(MouseEvent event) {
         btnStyle(event, "-fx-padding: 0 0 0 20; -fx-font-size: 14");
-
-        database
-        //hides button
-        //creates tempTextField on the place of button
-        //let user enter the name of the list
-        //checks for the same name in the current list collection
-        //if list with the same name is found, asks user to enter different name (tooltip or contextpopup)
-        //else initializes new list and adds it to the list collection
-        //shows button again
-    }
-
-    @FXML
-    public void rightAddDueDateBtnClicked(MouseEvent event) {
-        btnStyle(event, "-fx-padding: 0 0 0 20; -fx-font-size: 12");
-        //open calendar as contextmenu or popup or small window
-        //let user pick the date
-        //changes the date of the task to the new date
-    }
-
-    //Final version. It's a gui element which closes (hides) pane, nothing else.
-    @FXML
-    public void rightBackBtnClicked(MouseEvent event) {
-        btnStyle(event, "-fx-padding: 0 0 0 16;");
+        Button eventBtn = (Button) event.getSource();
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
-            var right = mainPane.getRight();
-            if (right.visibleProperty().get())
-                hideNode(right);
-            else
-                showNode(right);
+            if (mainPane.getRight() != null)
+                hideNode(mainPane.getRight());
+
+            hideNode(eventBtn);
+
+            TextField textField = new TextField();
+            setAnchorProperty(textField, 0d, 0d, 0d, 0d);
+            leftNewListPane.getChildren().add(textField);
+
+            ContextMenu errorPopup = initTextFieldValidator(textField);
+            Pane parent = (Pane) leftNewListBtn.getParent();
+
+            textField.focusedProperty().addListener((observable, unfocused, focused) -> {
+                if (unfocused) {
+                    if (!textField.getText().isEmpty()) {
+                        try {
+                            toDoList.addList(textField.getText());
+
+                            createLeftListBtn(textField.getText());
+
+                            updateListScrollPane();
+
+                            parent.getChildren().remove(textField);
+                            showNode(eventBtn);
+                        } catch (NullPointerException e) {
+                            textField.getParent().setStyle("-fx-border-color: red");
+                            errorPopup.getItems().clear();
+                            errorPopup.getItems().add(new MenuItem("List with that name already exists!"));
+                            errorPopup.show(textField, Side.RIGHT, -textField.getWidth(), -textField.getHeight());
+
+                            textField.requestFocus();
+                        }
+                    } else {
+                        mainPane.requestFocus();
+
+                        parent.getChildren().remove(textField);
+                        showNode(eventBtn);
+                    }
+                }
+            });
         }
     }
 
-    @FXML
-    public void rightDeleteBtnClicked(MouseEvent event) {
-        btnStyle(event, "-fx-padding: 0 16 0 0;");
+    protected static ContextMenu initTextFieldValidator(TextField textField) {
+        ContextMenu contextMenu = new ContextMenu();
+        contextMenu.setId("contextMenu");
+        contextMenu.setAutoHide(false);
 
-        if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
-            //get task collection from the current list
-            //looks for the task with the same name as the one currently specified in the textField on right Pane
-            //delete that task from list collection
-            //closes right pane (Task property pane)
-            rightBackBtnClicked(event);
+        textField.setOnKeyReleased(keyEvent -> {
+            contextMenu.hide();
+            textField.getParent().setStyle("");
+        });
+
+
+        return contextMenu;
+    }
+
+    protected void updateListScrollPane() {
+        leftScrollPaneVBox.getChildren().removeAll(leftScrollPaneVBox.getChildren());
+        toDoList.getLists().forEach(listManager -> createLeftListBtn(listManager.getListName()));
+    }
+
+    private void createListView(ListManager listManager) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("listView.fxml"));
+        listController = new ListController(listManager, this);
+        fxmlLoader.setControllerFactory(ListController -> listController);
+        try {
+            listView = fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    protected void hideNode(Node node) {
-        node.setManaged(false);
+    private void createLeftListBtn(String listName) {
+        Button listBtn = new Button(listName);
+        listBtn.setId("leftListBtn");
+        setAnchorProperty(listBtn, 0d, 0d, 0d, 0d);
+
+        listBtn.onMousePressedProperty().set(this::leftListBtnClicked);
+        listBtn.onMouseReleasedProperty().set(this::leftListBtnClicked);
+
+        leftScrollPaneVBox.getChildren().add(new AnchorPane(listBtn));
+    }
+
+    protected static void setAnchorProperty(Node node, Double left, Double right, Double top, Double bottom) {
+        AnchorPane.setLeftAnchor(node, left);
+        AnchorPane.setRightAnchor(node, right);
+        AnchorPane.setTopAnchor(node, top);
+        AnchorPane.setBottomAnchor(node, bottom);
+    }
+
+    protected static void hideNode(Node node) {
         node.setVisible(false);
+        node.setManaged(false);
     }
 
-    protected void showNode(Node node) {
-        node.setManaged(true);
+    protected static void showNode(Node node) {
         node.setVisible(true);
+        node.setManaged(true);
     }
 
     //Final Version, puts style on button press/release
-    protected void btnStyle(MouseEvent event, String style) {
-        Node btn = ((Node)event.getSource());
+    protected static void btnStyle(MouseEvent event, String style) {
+        Node btn = ((Node) event.getSource());
 
         if (event.getEventType().equals(MouseEvent.MOUSE_PRESSED)) {
             btn.getParent().setEffect(new BoxBlur(2, 2, 1));
@@ -232,6 +327,22 @@ public class ToDoListController {
         } else if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
             btn.setStyle("");
             btn.getParent().setEffect(null);
+        }
+    }
+
+
+    protected void setCenterPropertyToDefault() {
+        mainPane.centerProperty().set(null);
+    }
+
+    protected ToDoList getToDoList() {
+        return toDoList;
+    }
+
+    private void setFocusResetOnMouseClick(InputEvent mouseEvent) {
+        if (mouseEvent.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
+            Node node = (Node) mouseEvent.getSource();
+            node.requestFocus();
         }
     }
 }

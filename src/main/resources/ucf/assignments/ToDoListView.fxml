@@ -8,7 +8,6 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.Image?>
@@ -19,300 +18,224 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane id="mainPane" fx:id="mainPane" maxHeight="900.0" maxWidth="1200.0" minHeight="900.0" minWidth="1200.0" prefHeight="900.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ucf.assignments.ToDoListController">
-   <top>
-      <HBox id="top" alignment="CENTER_LEFT" BorderPane.alignment="CENTER">
-         <children>
-            <MenuBar id="topMenuBar">
-              <menus>
-                <Menu mnemonicParsing="false">
-                     <graphic>
-                        <ImageView fitHeight="24.0" fitWidth="24.0">
-                           <image>
-                              <Image url="@../../icons/menu.png" />
-                           </image>
+<BorderPane id="mainPane" fx:id="mainPane" focusTraversable="true" maxHeight="900.0" maxWidth="1200.0" minHeight="900.0"
+            minWidth="1200.0" prefHeight="900.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/16"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="ucf.assignments.ToDoListController">
+    <top>
+        <HBox id="top" alignment="CENTER_LEFT" focusTraversable="true" BorderPane.alignment="CENTER">
+            <children>
+                <MenuBar id="topMenuBar">
+                    <menus>
+                        <Menu mnemonicParsing="false">
+                            <graphic>
+                                <ImageView fitHeight="24.0" fitWidth="24.0">
+                                    <image>
+                                        <Image url="@../../icons/menu.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <items>
+                                <MenuItem fx:id="topMenuImport" mnemonicParsing="false" text="Import"/>
+                                <MenuItem fx:id="topMenuExport" mnemonicParsing="false" text="Export"/>
+                                <MenuItem fx:id="topMenuExit" mnemonicParsing="false" text="Exit"/>
+                            </items>
+                        </Menu>
+                    </menus>
+                    <HBox.margin>
+                        <Insets left="4.0"/>
+                    </HBox.margin>
+                </MenuBar>
+                <AnchorPane id="topSearchPane" focusTraversable="true" prefWidth="225.0">
+                    <children>
+                        <TextField id="topTextField" fx:id="topSearchBar" layoutX="31.0" layoutY="-3.0"
+                                   onMouseReleased="#topSearchBarReleased" prefHeight="26.0" prefWidth="175.0"
+                                   promptText="Type here to search" AnchorPane.bottomAnchor="0.0"
+                                   AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <font>
+                                <Font size="18.0"/>
+                            </font>
+                        </TextField>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" focusTraversable="true" pickOnBounds="true"
+                                   preserveRatio="true" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0"
+                                   AnchorPane.topAnchor="8.0">
+                            <image>
+                                <Image url="@../../icons/search.png"/>
+                            </image>
                         </ImageView>
-                     </graphic>
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="Import" />
-                        <MenuItem mnemonicParsing="false" text="Export" />
-                        <MenuItem mnemonicParsing="false" text="Exit" />
-                     </items>
-                </Menu>
-              </menus>
-               <HBox.margin>
-                  <Insets left="4.0" />
-               </HBox.margin>
-            </MenuBar>
-            <AnchorPane id="topSearchPane" prefWidth="225.0">
-               <children>
-                  <TextField id="topTextField" fx:id="topSearchBar" focusTraversable="false" layoutX="31.0" layoutY="-3.0" onMouseReleased="#topSearchBarReleased" prefHeight="26.0" prefWidth="175.0" promptText="Type here to search" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </TextField>
-                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="8.0">
-                     <image>
-                        <Image url="@../../icons/search.png" />
-                     </image>
-                  </ImageView>
-               </children>
-               <HBox.margin>
-                  <Insets bottom="8.0" left="4.0" top="8.0" />
-               </HBox.margin>
-            </AnchorPane>
-         </children>
-      </HBox>
-   </top>
-   <left>
-      <AnchorPane id="left" prefWidth="290.0" BorderPane.alignment="CENTER">
-         <children>
-            <VBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <AnchorPane minHeight="40.0">
-                     <VBox.margin>
-                        <Insets top="12.0" />
-                     </VBox.margin>
-                     <children>
-                        <Button id="leftTodayBtn" fx:id="leftTodayBtn" alignment="BASELINE_LEFT" cacheHint="SPEED" graphicTextGap="20.0" minHeight="40.0" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" onMousePressed="#leftTodayBtnClicked" onMouseReleased="#leftTodayBtnClicked" text="Today" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <graphic>
-                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../icons/Calendar/calendar-2.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                           <padding>
-                              <Insets left="24.0" />
-                           </padding>
+                    </children>
+                    <HBox.margin>
+                        <Insets bottom="8.0" left="4.0" top="8.0"/>
+                    </HBox.margin>
+                </AnchorPane>
+            </children>
+        </HBox>
+    </top>
+    <left>
+        <AnchorPane id="left" focusTraversable="true" prefWidth="290.0" BorderPane.alignment="CENTER">
+            <children>
+                <VBox focusTraversable="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                      AnchorPane.topAnchor="0.0">
+                    <children>
+                        <AnchorPane focusTraversable="true" minHeight="40.0">
+                            <VBox.margin>
+                                <Insets top="12.0"/>
+                            </VBox.margin>
+                            <children>
+                                <Button id="leftTodayBtn" fx:id="leftTodayBtn" alignment="BASELINE_LEFT"
+                                        cacheHint="SPEED" graphicTextGap="20.0" minHeight="40.0" mnemonicParsing="false"
+                                        nodeOrientation="LEFT_TO_RIGHT" text="Today" textAlignment="CENTER"
+                                        AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                        AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <graphic>
+                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image url="@../../icons/Calendar/calendar-2.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="20.0"/>
+                                    </font>
+                                    <padding>
+                                        <Insets left="24.0"/>
+                                    </padding>
+                                </Button>
+                            </children>
+                        </AnchorPane>
+                        <AnchorPane focusTraversable="true" minHeight="40.0">
+                            <VBox.margin>
+                                <Insets/>
+                            </VBox.margin>
+                            <children>
+                                <Button id="leftTomorrowBtn" fx:id="leftTomorrowBtn" alignment="BASELINE_LEFT"
+                                        graphicTextGap="20.0" minHeight="40.0" mnemonicParsing="false" text="Tomorrow"
+                                        AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                        AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <graphic>
+                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image url="@../../icons/Calendar/calendar-3.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="20.0"/>
+                                    </font>
+                                    <padding>
+                                        <Insets left="24.0"/>
+                                    </padding>
+                                </Button>
+                            </children>
+                        </AnchorPane>
+                        <AnchorPane focusTraversable="true" minHeight="40.0">
+                            <VBox.margin>
+                                <Insets/>
+                            </VBox.margin>
+                            <children>
+                                <Button id="leftNextSevenDaysBtn" fx:id="leftNextSevenDaysBtn" alignment="BASELINE_LEFT"
+                                        graphicTextGap="20.0" minHeight="40.0" mnemonicParsing="false"
+                                        text="Next 7 Days" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                        AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <graphic>
+                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image url="@../../icons/Calendar/calendar-week.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <padding>
+                                        <Insets left="24.0"/>
+                                    </padding>
+                                    <font>
+                                        <Font size="20.0"/>
+                                    </font>
+                                </Button>
+                            </children>
+                        </AnchorPane>
+                        <Separator prefWidth="200.0">
+                            <VBox.margin>
+                                <Insets bottom="12.0" left="20.0" right="20.0" top="12.0"/>
+                            </VBox.margin>
+                        </Separator>
+                        <AnchorPane focusTraversable="true" minHeight="40.0">
+                            <VBox.margin>
+                                <Insets/>
+                            </VBox.margin>
+                            <children>
+                                <ToggleButton id="leftShowListsBtn" fx:id="leftShowListsBtn" alignment="BASELINE_LEFT"
+                                              contentDisplay="RIGHT" graphicTextGap="190.0" mnemonicParsing="false"
+                                              onMousePressed="#leftShowListsBtnClicked"
+                                              onMouseReleased="#leftShowListsBtnClicked" text="Lists"
+                                              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <graphic>
+                                        <ImageView id="ListBtnIcon" fx:id="listBtnIcon" fitHeight="24.0" fitWidth="24.0"
+                                                   pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../../icons/expand.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="15.0"/>
+                                    </font>
+                                    <padding>
+                                        <Insets left="24.0"/>
+                                    </padding>
+                                </ToggleButton>
+                            </children>
+                        </AnchorPane>
+                        <ScrollPane id="leftScrollPane" fx:id="leftScrollPane" fitToWidth="true" managed="false"
+                                    maxHeight="400.0" visible="false">
+                            <content>
+                                <VBox id="leftListsScrollPaneVBox" fx:id="leftScrollPaneVBox" focusTraversable="true"
+                                      spacing="1.0"/>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                    <padding>
+                        <Insets top="20.0"/>
+                    </padding>
+                </VBox>
+                <AnchorPane fx:id="leftNewListPane" focusTraversable="true" minHeight="35.0"
+                            AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
+                    <children>
+                        <Button id="leftNewListBtn" fx:id="leftNewListBtn" alignment="BASELINE_LEFT"
+                                graphicTextGap="12.0" minHeight="30.0" mnemonicParsing="false"
+                                onMousePressed="#leftNewListBtnClicked" onMouseReleased="#leftNewListBtnClicked"
+                                pickOnBounds="false" text="New List" AnchorPane.bottomAnchor="0.0"
+                                AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <graphic>
+                                <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../../icons/plus.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <padding>
+                                <Insets left="12.0"/>
+                            </padding>
+                            <font>
+                                <Font size="16.0"/>
+                            </font>
                         </Button>
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane minHeight="40.0">
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                     <children>
-                        <Button id="leftTomorrowBtn" fx:id="leftTomorrowBtn" alignment="BASELINE_LEFT" graphicTextGap="20.0" minHeight="40.0" mnemonicParsing="false" onMousePressed="#leftTomorrowBtnClicked" onMouseReleased="#leftTomorrowBtnClicked" text="Tomorrow" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <graphic>
-                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../icons/Calendar/calendar-3.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                           <padding>
-                              <Insets left="24.0" />
-                           </padding>
-                        </Button>
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane minHeight="40.0">
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                     <children>
-                        <Button id="leftNextSevenDaysBtn" fx:id="leftNextSevenDaysBtn" alignment="BASELINE_LEFT" graphicTextGap="20.0" minHeight="40.0" mnemonicParsing="false" onMousePressed="#leftNextSevenDaysBtnClicked" onMouseReleased="#leftNextSevenDaysBtnClicked" text="Next 7 Days" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <graphic>
-                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../icons/Calendar/calendar-week.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <padding>
-                              <Insets left="24.0" />
-                           </padding>
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                        </Button>
-                     </children>
-                  </AnchorPane>
-                  <Separator prefWidth="200.0">
-                     <VBox.margin>
-                        <Insets bottom="12.0" left="20.0" right="20.0" top="12.0" />
-                     </VBox.margin>
-                  </Separator>
-                  <AnchorPane minHeight="40.0">
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                     <children>
-                        <ToggleButton id="leftShowListsBtn" fx:id="leftShowListsBtn" alignment="BASELINE_LEFT" contentDisplay="RIGHT" graphicTextGap="190.0" mnemonicParsing="false" onMousePressed="#leftShowListsBtnClicked" onMouseReleased="#leftShowListsBtnClicked" text="Lists" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <graphic>
-                              <ImageView id="ListBtnIcon" fx:id="listBtnIcon" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../icons/expand.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <font>
-                              <Font size="15.0" />
-                           </font>
-                           <padding>
-                              <Insets left="24.0" />
-                           </padding>
-                        </ToggleButton>
-                     </children>
-                  </AnchorPane>
-                  <ScrollPane id="leftScrollPane" fx:id="leftScrollPane" fitToWidth="true" managed="false" visible="false">
-                     <content>
-                        <VBox id="leftListsScrollPaneVBox" spacing="1.0">
-                           <children>
-                              <AnchorPane minHeight="40.0" styleClass="pane">
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                                 <children>
-                                    <Button id="leftListBtn" alignment="BASELINE_LEFT" graphicTextGap="0.0" minHeight="40.0" mnemonicParsing="false" onMousePressed="#leftListBtnClicked" onMouseReleased="#leftListBtnClicked" text="List 1" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                       <padding>
-                                          <Insets left="48.0" />
-                                       </padding>
-                                    </Button>
-                                 </children>
-                              </AnchorPane>
-                              <AnchorPane minHeight="40.0">
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                                 <children>
-                                    <Button id="leftListBtn" alignment="BASELINE_LEFT" graphicTextGap="0.0" minHeight="40.0" mnemonicParsing="false" onMousePressed="#leftListBtnClicked" onMouseReleased="#leftListBtnClicked" text="List 2" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                       <padding>
-                                          <Insets left="48.0" />
-                                       </padding>
-                                    </Button>
-                                 </children>
-                              </AnchorPane>
-                              <AnchorPane minHeight="40.0">
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                                 <children>
-                                    <Button id="leftListBtn" alignment="BASELINE_LEFT" graphicTextGap="20.0" minHeight="40.0" mnemonicParsing="false" onMousePressed="#leftListBtnClicked" onMouseReleased="#leftListBtnClicked" text="List 3" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                       <padding>
-                                          <Insets left="48.0" />
-                                       </padding>
-                                    </Button>
-                                 </children>
-                              </AnchorPane>
-                           </children>
-                        </VBox>
-                     </content>
-                  </ScrollPane>
-               </children>
-               <padding>
-                  <Insets top="20.0" />
-               </padding>
-            </VBox>
-            <AnchorPane minHeight="30.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
-               <children>
-                  <Button id="leftNewListBtn" fx:id="leftNewListBtn" alignment="BASELINE_LEFT" graphicTextGap="12.0" minHeight="30.0" mnemonicParsing="false" onMousePressed="#leftNewListBtnClicked" onMouseReleased="#leftNewListBtnClicked" pickOnBounds="false" text="New List" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <graphic>
-                        <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
-                           <image>
-                              <Image url="@../../icons/plus.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <padding>
-                        <Insets left="12.0" />
-                     </padding>
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Button>
-               </children>
-            </AnchorPane>
-         </children>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-      </AnchorPane>
-   </left>
-   <right>
-      <AnchorPane id="right" managed="false" visible="false" BorderPane.alignment="CENTER">
-         <children>
-            <AnchorPane id="rightEditPane" minHeight="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-               <children>
-                  <Button id="rightBackBtn" fx:id="rightBackBtn" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" mnemonicParsing="false" onMousePressed="#rightBackBtnClicked" onMouseReleased="#rightBackBtnClicked" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <graphic>
-                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../icons/more-than.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </Button>
-                  <Button id="rightDeleteBtn" fx:id="rightDeleteBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onMousePressed="#rightDeleteBtnClicked" onMouseReleased="#rightDeleteBtnClicked" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <graphic>
-                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../icons/trash.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </Button>
-               </children>
-            </AnchorPane>
-            <AnchorPane id="rightTaskNamePane" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <TextField id="rightTaskNameField" fx:id="rightTaskNameField" text="Task Name" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" />
-               </children>
-               <padding>
-                  <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
-               </padding>
-            </AnchorPane>
-            <VBox layoutY="70.0" prefWidth="200.0" spacing="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="64.0">
-               <children>
-                  <AnchorPane prefHeight="36.0">
-                     <children>
-                        <Button id="rightAddDueDateBtn" fx:id="rightAddDueDateBtn" alignment="BASELINE_LEFT" graphicTextGap="16.0" mnemonicParsing="false" onMousePressed="#rightAddDueDateBtnClicked" onMouseReleased="#rightAddDueDateBtnClicked" text="Add Due Date" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <graphic>
-                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../icons/Calendar/calendar-edit.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Button>
-                     </children>
-                  </AnchorPane>
-                  <TextArea id="rightAddNoteField" fx:id="rightAddNoteField" promptText="Add Note" styleClass="text-area" wrapText="true">
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                     <padding>
-                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-                     </padding>
-                  </TextArea>
-               </children>
-            </VBox>
-         </children>
-      </AnchorPane>
-   </right>
-   <center>
-   </center>
-   <stylesheets>
-      <URL value="@../../css/ToDoListStyle.css" />
-      <URL value="@../../css/DefaultStyle.css" />
-   </stylesheets>
+                    </children>
+                </AnchorPane>
+            </children>
+            <BorderPane.margin>
+                <Insets/>
+            </BorderPane.margin>
+        </AnchorPane>
+    </left>
+    <right>
+    </right>
+    <center>
+    </center>
+    <stylesheets>
+        <URL value="@../../css/ToDoListStyle.css"/>
+        <URL value="@../../css/DefaultStyle.css"/>
+    </stylesheets>
 </BorderPane>

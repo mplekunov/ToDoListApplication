@@ -7,7 +7,6 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -16,13 +15,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="center" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ucf.assignments.ListController">
+<AnchorPane id="center" focusTraversable="true" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ucf.assignments.ListController">
    <children>
-      <VBox layoutX="10.0" layoutY="10.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="12.0">
+      <VBox focusTraversable="true" layoutX="10.0" layoutY="10.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="12.0">
          <children>
-            <AnchorPane>
+            <AnchorPane focusTraversable="true">
                <children>
-                  <MenuBar id="centerMenuBar" fx:id="centerMenuBar" focusTraversable="false" AnchorPane.bottomAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
+                  <MenuBar id="centerMenuBar" fx:id="centerMenuBar" AnchorPane.bottomAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
                      <menus>
                         <Menu mnemonicParsing="false">
                            <items>
@@ -30,6 +29,7 @@
                               <MenuItem fx:id="menuShowCompleted" mnemonicParsing="false" onAction="#menuShowCompletedClicked" text="Show Completed" />
                               <MenuItem fx:id="menuShowInProgress" mnemonicParsing="false" onAction="#menuShowInProgressClicked" text="Show In Progress" />
                               <MenuItem fx:id="menuDeleteList" mnemonicParsing="false" onAction="#menuDeleteListClicked" text="Delete List" />
+                              <MenuItem fx:id="menuDeleteAllTasks" mnemonicParsing="false" onAction="#menuDeleteAllTasksClicked" text="Delete All Tasks" />
                            </items>
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
@@ -44,7 +44,7 @@
                         <Insets />
                      </opaqueInsets>
                   </MenuBar>
-                  <TextField id="centerListNameField" fx:id="centerListNameField" editable="false" focusTraversable="false" layoutX="55.0" layoutY="14.0" onMouseClicked="#listNameFieldClicked" text="List Name" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TextField id="centerListNameField" fx:id="centerListNameField" editable="false" layoutX="55.0" layoutY="14.0" onMouseClicked="#listNameFieldClicked" text="List Name" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <font>
                         <Font size="18.0" />
                      </font></TextField>
@@ -53,71 +53,29 @@
                   <Insets bottom="36.0" />
                </VBox.margin>
             </AnchorPane>
-            <AnchorPane>
+            <AnchorPane focusTraversable="true">
                <children>
-                  <TextField fx:id="centerProgressBarField" alignment="CENTER" editable="false" focusTraversable="false" prefWidth="60.0" styleClass="text-field" text="100 %" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TextField fx:id="centerProgressBarField" alignment="CENTER" editable="false" prefWidth="60.0" styleClass="text-field" text="100 %" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </TextField>
-                  <ProgressBar id="centerTaskProgressBar" fx:id="centerTaskProgressBar" progress="1.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="4.0" />
+                  <ProgressBar id="centerTaskProgressBar" fx:id="centerTaskProgressBar" progress="1.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="8.0" />
                </children>
                <VBox.margin>
                   <Insets bottom="12.0" />
                </VBox.margin>
             </AnchorPane>
-            <ScrollPane id="centerTaskScrollPane" fx:id="centerTaskScrollPane" fitToWidth="true">
+            <ScrollPane id="centerTaskScrollPane" fx:id="centerTaskScrollPane" fitToWidth="true" maxHeight="600.0">
                <content>
-                  <VBox>
-                     <children>
-                        <AnchorPane id="centerTaskPane" minHeight="40.0">
-                           <VBox.margin>
-                              <Insets bottom="4.0" />
-                           </VBox.margin>
-                           <children>
-                              <Button id="centerTaskBtn" alignment="BASELINE_LEFT" focusTraversable="false" graphicTextGap="0.0" minHeight="40.0" mnemonicParsing="false" onMousePressed="#centerTaskBtnClicked" onMouseReleased="#centerTaskBtnClicked" text="Task 1" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <padding>
-                                    <Insets left="20.0" />
-                                 </padding>
-                              </Button>
-                              <RadioButton id="centerTaskRadioBtn" contentDisplay="CENTER" graphicTextGap="0.0" mnemonicParsing="false" onMousePressed="#centerTaskRadioBtnClicked" onMouseReleased="#centerTaskRadioBtnClicked" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="0.0" />
-                           </children>
-                        </AnchorPane>
-                        <AnchorPane id="centerTaskPane" minHeight="40.0">
-                           <VBox.margin>
-                              <Insets bottom="4.0" />
-                           </VBox.margin>
-                           <children>
-                              <RadioButton id="centerTaskRadioBtn" contentDisplay="CENTER" graphicTextGap="0.0" mnemonicParsing="false" onMousePressed="#centerTaskRadioBtnClicked" onMouseReleased="#centerTaskRadioBtnClicked" selected="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="0.0" />
-                              <Button id="centerTaskBtn" alignment="BASELINE_LEFT" focusTraversable="false" graphicTextGap="0.0" minHeight="40.0" mnemonicParsing="false" onMousePressed="#centerTaskBtnClicked" onMouseReleased="#centerTaskBtnClicked" text="Task 2" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <padding>
-                                    <Insets left="20.0" />
-                                 </padding>
-                              </Button>
-                           </children>
-                        </AnchorPane>
-                        <AnchorPane id="centerTaskPane" minHeight="40.0">
-                           <VBox.margin>
-                              <Insets bottom="4.0" />
-                           </VBox.margin>
-                           <children>
-                              <Button id="centerTaskBtn" alignment="BASELINE_LEFT" focusTraversable="false" graphicTextGap="20.0" minHeight="40.0" mnemonicParsing="false" onMousePressed="#centerTaskBtnClicked" onMouseReleased="#centerTaskBtnClicked" text="Task 3" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <padding>
-                                    <Insets left="20.0" />
-                                 </padding>
-                              </Button>
-                              <RadioButton id="centerTaskRadioBtn" contentDisplay="CENTER" graphicTextGap="0.0" mnemonicParsing="false" onMousePressed="#centerTaskRadioBtnClicked" onMouseReleased="#centerTaskRadioBtnClicked" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="0.0" />
-                           </children>
-                        </AnchorPane>
-                     </children>
-                  </VBox>
+                  <VBox fx:id="taskScrollPaneVBox" focusTraversable="true" spacing="2.0" />
                </content>
             </ScrollPane>
          </children>
       </VBox>
-      <AnchorPane layoutX="10.0" layoutY="10.0" minHeight="30.0" styleClass="pane" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
+      <AnchorPane id="centerNewTaskPane" fx:id="centerNewTaskPane" focusTraversable="true" layoutX="10.0" layoutY="10.0" minHeight="35.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
          <children>
-            <Button id="centerNewTaskBtn" fx:id="centerNewTaskBtn" alignment="BASELINE_LEFT" focusTraversable="false" graphicTextGap="12.0" minHeight="30.0" mnemonicParsing="false" onMousePressed="#centerNewTaskBtnClicked" onMouseReleased="#centerNewTaskBtnClicked" text="New Task" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <Button id="centerNewTaskBtn" fx:id="centerNewTaskBtn" alignment="BASELINE_LEFT" graphicTextGap="12.0" minHeight="30.0" mnemonicParsing="false" onMousePressed="#centerNewTaskBtnClicked" onMouseReleased="#centerNewTaskBtnClicked" text="New Task" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <graphic>
                   <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>

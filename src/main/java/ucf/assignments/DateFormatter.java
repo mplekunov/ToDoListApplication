@@ -9,9 +9,21 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public final class DateFormatter {
-    private DateFormatter() {};
+    private static final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private DateFormatter() {
+    }
 
     public static String dateToString(LocalDate date) {
-        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        if (date != null)
+            return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        else
+            return null;
+    }
+
+    public static LocalDate stringToDate(String date) {
+        if (!date.equals("null"))
+            return LocalDate.parse(date, df);
+        return null;
     }
 }

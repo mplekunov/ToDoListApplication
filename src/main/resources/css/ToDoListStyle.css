@@ -1,3 +1,7 @@
+.root {
+    -fx-background-color: rgb(249, 240, 242);
+}
+
 /*TOP PANE START*/
 #top {
     -fx-background-color: rgb(232, 209, 197);
@@ -46,7 +50,7 @@
     -fx-border-width: 1;
 }
 
-#leftTodayBtn:hover, #leftTomorrowBtn:hover, #leftNextSevenDaysBtn:hover {
+#dayViewBtn:hover, #leftTomorrowBtn:hover, #leftNextSevenDaysBtn:hover {
     -fx-background-color: rgb(220, 223, 229);
     -fx-border-color: rgb(200, 203, 209);
     -fx-border-style: solid hidden solid solid;
@@ -76,6 +80,13 @@
     -fx-border-style: hidden hidden solid hidden;
 }
 
+#leftListBtn {
+    -fx-padding: 0 0 0 48;
+    -fx-font-size: 14;
+    -fx-alignment: baseline-left;
+    -fx-min-height: 40;
+}
+
 #leftListBtn:hover {
     -fx-background-color: rgb(200, 203, 209);
     -fx-border-color: rgb(220, 223, 229);
@@ -83,7 +94,7 @@
     -fx-border-width: 1;
 }
 
-#leftNewListBtn {
+#leftNewListPane {
     -fx-background-color: rgb(173, 182, 196);
     -fx-border-color: rgb(153, 162, 174);
     -fx-border-radius: 8;
@@ -91,45 +102,8 @@
     -fx-border-style: solid;
 }
 
-#leftNewListBtn:hover {
+#leftNewListPane:hover {
     -fx-background-color: rgb(143, 152, 166);
     -fx-border-color: rgb(123, 132, 146);
 }
 /*LEFT PANE END*/
-
-/*RIGHT PANE START*/
-
-#right {
-    -fx-background-color: rgb(231, 236, 239);
-    -fx-border-color: rgb(201, 206, 209);
-    -fx-border-style: hidden hidden hidden solid;
-    -fx-border-width: 1;
-}
-
-#rightEditPane, #rightTaskNamePane, #rightAddDueDateBtn, #rightAddNoteField {
-    -fx-background-color: rgb(245, 229, 201);
-    -fx-border-color: rgb(195, 179, 151);
-}
-
-#rightTaskNamePane {
-    -fx-border-width: 0 0 1 0;
-    -fx-border-style: hidden hidden solid hidden;
-}
-
-#rightAddDueDateBtn, #rightAddNoteField, #rightAddDueDateBtn:hover {
-    -fx-border-width: 1;
-    -fx-border-style: solid;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-}
-
-#rightEditPane {
-    -fx-border-width: 1 0 0 0;
-    -fx-border-style: solid hidden hidden hidden;
-}
-
-#rightBackBtn:hover, #rightDeleteBtn:hover, #rightAddDueDateBtn:hover {
-    -fx-background-color: rgb(195, 179, 151);
-    -fx-border-color: rgb(175, 159, 131);
-}
-/*RIGHT PANE END*/
