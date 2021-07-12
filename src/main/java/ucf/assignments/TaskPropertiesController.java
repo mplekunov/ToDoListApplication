@@ -21,6 +21,7 @@ import static ucf.assignments.ToDoListController.*;
 public class TaskPropertiesController {
     private final ListController listController;
     private final String taskName;
+    private AnchorPane taskPropertiesView;
 
     @FXML AnchorPane right;
     @FXML TextField rightTaskNameField;
@@ -206,5 +207,13 @@ public class TaskPropertiesController {
         });
 
         return vbox;
+    }
+
+    public void setTaskPropertiesView(AnchorPane taskPropertiesView) {
+        this.taskPropertiesView = taskPropertiesView;
+    }
+
+    public AnchorPane getTaskPropertiesView() {
+        return taskPropertiesView;
     }
 }

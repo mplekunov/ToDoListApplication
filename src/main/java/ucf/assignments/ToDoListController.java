@@ -29,15 +29,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.HashMap;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class ToDoListController {
     private final Database database;
-    private ToDoListModel toDoList;
+    private ToDoListModel toDoListModel;
+
+    private HashMap<String, ListController> listViews;
 
     @FXML
     TextField topSearchBar;
+    @FXML
+    AnchorPane topSearchPane;
     @FXML
     MenuItem topMenuImport;
     @FXML
@@ -64,17 +69,16 @@ public class ToDoListController {
 
     @FXML
     BorderPane mainPane;
-    private AnchorPane listView;
-    private ListController listController;
 
     public ToDoListController() {
         database = new Database();
-        toDoList = new ToDoListModel(database);
+        toDoListModel = new ToDoListModel(database);
+        listViews = new HashMap<>();
     }
 
     @FXML
     public void initialize() {
-        toDoList.getLists().forEach(listManager -> createLeftListBtn(listManager.getListName()));
+        toDoListModel.getLists().forEach(listManager -> createLeftListBtn(listManager.getListName()));
 
         mainPane.setOnMouseClicked(this::setFocusResetOnMouseClick);
         mainPane.setOnKeyReleased(this::setFocusResetOnEnterPressed);
@@ -123,9 +127,9 @@ public class ToDoListController {
 
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("SQLite Database", "*.sqlite"));
 
-        toDoList.upload(database);
+        toDoListModel.upload(database);
 
-        if (!toDoList.getLists().isEmpty()) {
+        if (!toDoListModel.getLists().isEmpty()) {
             File file = fileChooser.showSaveDialog(mainPane.getScene().getWindow());
 
             if (!file.getName().contains("."))
@@ -138,9 +142,8 @@ public class ToDoListController {
             }
 
             updateListScrollPane();
-            listController.updateTaskScrollPane();
-        }
-        else {
+            mainPane.centerProperty().set(null);
+        } else {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Action is not valid");
             errorAlert.setContentText("You have no items for export");
@@ -167,12 +170,12 @@ public class ToDoListController {
 
         //removes all already existing entries
         leftScrollPaneVBox.getChildren().removeAll(leftScrollPaneVBox.getChildren());
-        toDoList = new ToDoListModel(database);
+        toDoListModel = new ToDoListModel(database);
     }
 
     @FXML
     public void exitApplication(ActionEvent event) {
-        toDoList.upload(database);
+        toDoListModel.upload(database);
 
         Platform.exit();
         System.exit(0);
@@ -185,8 +188,46 @@ public class ToDoListController {
 
     @FXML
     public void topSearchBarReleased(MouseEvent event) {
-        if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED))
-            topSearchBar.setText("");
+        TextField textField = (TextField) event.getSource();
+        topSearchPane.setStyle("-fx-background-color: rgb(197, 174, 162)");
+
+        if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+            ContextMenu errorPopup = initTextFieldValidator(textField, "-fx-background-color: rgb(197, 174, 162); -fx-border-color: rgb(197, 174, 162);");
+
+            topSearchBar.addEventFilter(KeyEvent.KEY_RELEASED, keyEvent -> {
+                if (textField.getText().length() >= 20) {
+                    event.consume();
+                }
+            });
+
+            topSearchBar.focusedProperty().addListener((observable, unfocused, focused) -> {
+                if (unfocused) {
+                    if (!textField.getText().isEmpty()) {
+                        try {
+                            toDoListModel.findList(textField.getText());
+                            //duplicate
+                            if (mainPane.getRight() != null)
+                                hideNode(mainPane.getRight());
+
+                            mainPane.centerProperty().set(listViews.get(textField.getText()).getListView());
+
+                            textField.setText("");
+                            topSearchPane.setStyle("");
+                        } catch (NullPointerException e) {
+                            topSearchPane.setStyle("-fx-border-color: red; -fx-background-color: rgb(197, 174, 162);");
+
+                            errorPopup.getItems().clear();
+                            errorPopup.getItems().add(new MenuItem("There is no List with such name."));
+                            errorPopup.show(textField, Side.RIGHT, -(textField.getWidth() + 20), -(textField.getHeight() + 4));
+
+                            textField.requestFocus();
+                        }
+                    }
+                    else
+                        topSearchPane.setStyle("");
+                }
+            });
+        }
     }
 
     @FXML
@@ -194,6 +235,7 @@ public class ToDoListController {
         btnStyle(event, "-fx-padding: 0 0 0 40; -fx-font-size: 13; -fx-graphic-text-gap: 160;");
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+            //duplicate
             if (mainPane.getRight() != null)
                 hideNode(mainPane.getRight());
 
@@ -215,12 +257,11 @@ public class ToDoListController {
         Button eventBtn = (Button) event.getSource();
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+            //duplicate
             if (mainPane.getRight() != null)
                 hideNode(mainPane.getRight());
 
-            createListView(toDoList.findList(eventBtn.getText()).getListName());
-
-            mainPane.centerProperty().set(listView);
+            mainPane.centerProperty().set(listViews.get(eventBtn.getText()).getListView());
         }
     }
 
@@ -228,6 +269,7 @@ public class ToDoListController {
     public void leftNewListBtnClicked(MouseEvent event) {
         btnStyle(event, "-fx-padding: 0 0 0 20; -fx-font-size: 14");
         Button eventBtn = (Button) event.getSource();
+        leftNewListPane.setStyle("-fx-background-color: rgb(123, 132, 146);");
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
             if (mainPane.getRight() != null)
@@ -239,14 +281,14 @@ public class ToDoListController {
             setAnchorProperty(textField, 0d, 0d, 0d, 0d);
             leftNewListPane.getChildren().add(textField);
 
-            ContextMenu errorPopup = initTextFieldValidator(textField);
+            ContextMenu errorPopup = initTextFieldValidator(textField, "-fx-background-color: rgb(123, 132, 146); -fx-border-color: rgb(123, 132, 146);");
             Pane parent = (Pane) leftNewListBtn.getParent();
 
             textField.focusedProperty().addListener((observable, unfocused, focused) -> {
                 if (unfocused) {
                     if (!textField.getText().isEmpty()) {
                         try {
-                            toDoList.addLst(new ListModel(textField.getText()));
+                            toDoListModel.addLst(new ListModel(textField.getText()));
 
                             createLeftListBtn(textField.getText());
 
@@ -254,8 +296,14 @@ public class ToDoListController {
 
                             parent.getChildren().remove(textField);
                             showNode(eventBtn);
+                            leftNewListPane.setStyle("");
+
+                            if (!leftScrollPane.isVisible()) {
+                                leftShowListsBtn.fire();
+                                leftShowListsBtnClicked(event);
+                            }
                         } catch (NullPointerException e) {
-                            textField.getParent().setStyle("-fx-border-color: red");
+                            textField.getParent().setStyle("-fx-border-color: red; -fx-background-color: rgb(123, 132, 146);");
                             errorPopup.getItems().clear();
                             errorPopup.getItems().add(new MenuItem("List with that name already exists!"));
                             errorPopup.show(textField, Side.RIGHT, -textField.getWidth(), -textField.getHeight());
@@ -267,41 +315,53 @@ public class ToDoListController {
 
                         parent.getChildren().remove(textField);
                         showNode(eventBtn);
+                        leftNewListPane.setStyle("");
                     }
                 }
             });
         }
     }
 
-    protected static ContextMenu initTextFieldValidator(TextField textField) {
+    protected static ContextMenu initTextFieldValidator(TextField textField, String style) {
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.setId("contextMenu");
         contextMenu.setAutoHide(false);
 
-        textField.setOnKeyReleased(keyEvent -> {
-            contextMenu.hide();
-            textField.getParent().setStyle("");
+        textField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (contextMenu.getItems().size() > 0) {
+                contextMenu.hide();
+                contextMenu.getItems().clear();
+                textField.getParent().setStyle(style);
+            }
         });
-
 
         return contextMenu;
     }
 
     protected void updateListScrollPane() {
-        if (leftScrollPaneVBox != null)
+        if (leftScrollPaneVBox != null) {
             leftScrollPaneVBox.getChildren().removeAll(leftScrollPaneVBox.getChildren());
-        toDoList.getLists().forEach(listManager -> createLeftListBtn(listManager.getListName()));
+            listViews.clear();
+        }
+
+        toDoListModel.getLists().forEach(listManager -> createLeftListBtn(listManager.getListName()));
     }
 
-    private void createListView(String listName) {
+    private ListController createListView(String listName) {
+        AnchorPane listView = null;
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("listView.fxml"));
-        listController = new ListController(listName, this);
+        ListController listController = new ListController(listName, this);
         fxmlLoader.setControllerFactory(ListController -> listController);
         try {
             listView = fxmlLoader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        listController.setListView(listView);
+
+        return listController;
     }
 
     private void createLeftListBtn(String listName) {
@@ -313,6 +373,7 @@ public class ToDoListController {
         listBtn.onMouseReleasedProperty().set(this::leftListBtnClicked);
 
         leftScrollPaneVBox.getChildren().add(new AnchorPane(listBtn));
+        listViews.put(listName, createListView(listName));
     }
 
     protected static void setAnchorProperty(Node node, Double left, Double right, Double top, Double bottom) {
@@ -349,7 +410,7 @@ public class ToDoListController {
     }
 
     protected ToDoListModel getToDoListModel() {
-        return toDoList;
+        return toDoListModel;
     }
 
     private void setFocusResetOnMouseClick(InputEvent mouseEvent) {
@@ -358,4 +419,5 @@ public class ToDoListController {
             node.requestFocus();
         }
     }
+
 }

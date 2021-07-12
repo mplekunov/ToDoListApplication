@@ -17,7 +17,7 @@ public class ToDoListModel {
         db.getLists().forEach(list -> lists.put(list, DataState.Cached));
     }
 
-    public ListModel getList(String listName) {
+    public ListModel getList(String listName) throws NullPointerException {
         ListModel mapped = lists.entrySet().stream()
                 .filter(entry -> !entry.getValue().equals(DataState.Removed))
                 .filter(entry -> entry.getKey().getListName().equals(listName))
@@ -29,7 +29,7 @@ public class ToDoListModel {
         return mapped;
     }
 
-    public ListModel getList(ListModel listManager) {
+    public ListModel getList(ListModel listManager) throws NullPointerException {
         ListModel mapped = lists.keySet().stream()
                 .filter(key -> key.equals(listManager))
                 .findFirst().orElseThrow(null);
@@ -39,7 +39,7 @@ public class ToDoListModel {
         return mapped;
     }
 
-    public ListModel findList(String listName) {
+    public ListModel findList(String listName) throws NullPointerException {
         ListModel mapped = lists.entrySet().stream()
                 .filter(entry -> !entry.getValue().equals(DataState.Removed))
                 .filter(entry -> entry.getKey().getListName().equals(listName))
@@ -49,7 +49,7 @@ public class ToDoListModel {
         return new ListModel(mapped.getListName(), mapped.getId(), new TreeSet<>(mapped.getAllTasks()));
     }
 
-    public void addLst(ListModel listManager) {
+    public void addLst(ListModel listManager) throws NullPointerException {
         boolean isFound = lists.keySet().stream()
                 .anyMatch(key -> key.equals(listManager));
 
@@ -62,14 +62,12 @@ public class ToDoListModel {
                 mapped.setListName(listManager.getListName());
 
                 lists.replace(mapped, DataState.Uncached);
-            }
-            else throw new NullPointerException();
-        }
-        else
+            } else throw new NullPointerException();
+        } else
             lists.put(listManager, DataState.Uncached);
     }
 
-    public void deleteList(String listName) {
+    public void deleteList(String listName) throws NullPointerException {
         ListModel mapped = lists.keySet().stream()
                 .filter(key -> key.getListName().equals(listName))
                 .findFirst().orElseThrow(null);
@@ -79,7 +77,7 @@ public class ToDoListModel {
         mapped.clear();
     }
 
-    public void deleteList(ListModel listManager) {
+    public void deleteList(ListModel listManager) throws NullPointerException {
         ListModel mapped = lists.keySet().stream()
                 .filter(key -> key.equals(listManager))
                 .findFirst().orElseThrow(null);

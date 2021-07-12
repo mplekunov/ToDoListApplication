@@ -30,11 +30,7 @@ public class ListModel implements Comparable {
         this.listName = listName;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public TaskModel getTask(String taskName) {
+    public TaskModel getTask(String taskName) throws NullPointerException {
         TaskModel mapped = tasks.entrySet().stream()
                 .filter(entry -> !entry.getValue().equals(DataState.Removed))
                 .filter(entry -> entry.getKey().getName().equals(taskName))
@@ -46,7 +42,7 @@ public class ListModel implements Comparable {
         return mapped;
     }
 
-    public TaskModel getTask(TaskModel task) {
+    public TaskModel getTask(TaskModel task) throws NullPointerException {
         TaskModel mapped = tasks.keySet().stream()
                 .filter(key -> key.equals(task))
                 .findFirst().orElseThrow(null);
@@ -56,7 +52,7 @@ public class ListModel implements Comparable {
         return mapped;
     }
 
-    public TaskModel findTask(String taskName) {
+    public TaskModel findTask(String taskName) throws NullPointerException {
         TaskModel mapped = tasks.entrySet().stream()
                 .filter(entry -> !entry.getValue().equals(DataState.Removed))
                 .filter(entry -> entry.getKey().getName().equals(taskName))
@@ -66,7 +62,7 @@ public class ListModel implements Comparable {
         return new TaskModel(mapped.getName(), mapped.getDueDate(), mapped.getDescription(), mapped.getCompletionState());
     }
 
-    public void addTask(TaskModel task) {
+    public void addTask(TaskModel task) throws NullPointerException {
         boolean isFound = tasks.keySet().stream()
                 .anyMatch(key -> key.equals(task));
 
@@ -82,15 +78,13 @@ public class ListModel implements Comparable {
                 mapped.setCompletionState(task.getCompletionState());
 
                 tasks.replace(mapped, DataState.Uncached);
-            }
-            else
+            } else
                 throw new NullPointerException();
-        }
-        else
+        } else
             tasks.put(task, DataState.Uncached);
     }
 
-    public void deleteTask(String taskName) {
+    public void deleteTask(String taskName) throws NullPointerException {
         TaskModel mapped = tasks.keySet().stream()
                 .filter(key -> key.getName().equals(taskName))
                 .findFirst().orElseThrow(null);
@@ -99,7 +93,7 @@ public class ListModel implements Comparable {
         mapped.clear();
     }
 
-    public void deleteTask(TaskModel task) {
+    public void deleteTask(TaskModel task) throws NullPointerException {
         TaskModel mapped = tasks.keySet().stream()
                 .filter(key -> key.equals(task))
                 .findFirst().orElseThrow(null);
@@ -144,7 +138,7 @@ public class ListModel implements Comparable {
                 .filter(entry -> !entry.getValue().equals(DataState.Removed))
                 .map(Map.Entry::getKey)
                 .sorted(Comparator.comparing(TaskModel::getCompletionState).reversed()
-                    .thenComparing(TaskModel::getName))
+                        .thenComparing(TaskModel::getName))
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
@@ -154,7 +148,7 @@ public class ListModel implements Comparable {
                 .filter(entry -> entry.getKey().getCompletionState())
                 .map(Map.Entry::getKey)
                 .sorted(Comparator.comparing(TaskModel::getName)
-                    .thenComparing(TaskModel::getDueDate))
+                        .thenComparing(TaskModel::getDueDate))
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
@@ -164,7 +158,7 @@ public class ListModel implements Comparable {
                 .filter(entry -> !entry.getKey().getCompletionState())
                 .map(Map.Entry::getKey)
                 .sorted(Comparator.comparing(TaskModel::getName)
-                    .thenComparing(TaskModel::getDueDate))
+                        .thenComparing(TaskModel::getDueDate))
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
@@ -172,6 +166,7 @@ public class ListModel implements Comparable {
         listName = "";
         deleteAllTasks();
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

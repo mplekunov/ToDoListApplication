@@ -15,16 +15,17 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import static ucf.assignments.ToDoListController.*;
 
 public class ListController {
     private final ToDoListController toDoListController;
+    private HashMap<String, TaskPropertiesController> taskPropertiesViews;
+
     private final String listName;
+    private AnchorPane listView;
 
-    private TaskPropertiesController taskProperties;
-
-    private AnchorPane taskPropertiesView;
 
     @FXML
     TextField centerListNameField;
@@ -57,6 +58,7 @@ public class ListController {
     public ListController(String listName, ToDoListController toDoListController) {
         this.listName = listName;
         this.toDoListController = toDoListController;
+        taskPropertiesViews = new HashMap<>();
     }
 
     @FXML
@@ -163,30 +165,31 @@ public class ListController {
         btnStyle(event, "-fx-padding: 0 0 0 0 50; -fx-font-size: 11");
 
         if (event.getEventType().equals(MouseEvent.MOUSE_PRESSED)) {
-            ListModel listModel = toDoListController.getToDoListModel().findList(listName);
+            toDoListController.mainPane.rightProperty().set(taskPropertiesViews.get(taskName).getTaskPropertiesView());
 
-            if (toDoListController.mainPane.getRight() == null || taskPropertiesView == null || !taskProperties.rightTaskNameField.getText().equals(taskName)) {
-                createTaskPropertiesView(listModel.findTask(taskName).getName());
-                toDoListController.mainPane.setRight(taskPropertiesView);
+            if (toDoListController.mainPane.getRight().isVisible())
+                hideNode(taskPropertiesViews.get(taskName).getTaskPropertiesView());
+            else {
+                showNode(taskPropertiesViews.get(taskName).getTaskPropertiesView());
             }
-
-            if (taskPropertiesView.isVisible())
-                hideNode(taskPropertiesView);
-            else
-                showNode(taskPropertiesView);
-
         }
     }
 
-    private void createTaskPropertiesView(String taskName) {
+    private TaskPropertiesController createTaskPropertiesView(String taskName) {
+        AnchorPane taskPropertiesView = null;
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("taskPropertiesView.fxml"));
-        taskProperties = new TaskPropertiesController(taskName, this);
-        fxmlLoader.setControllerFactory(taskPropertiesController -> taskProperties);
+        TaskPropertiesController taskPropertiesController = new TaskPropertiesController(taskName, this);
+        fxmlLoader.setControllerFactory(TaskPropertiesController -> taskPropertiesController);
         try {
             taskPropertiesView = fxmlLoader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        taskPropertiesController.setTaskPropertiesView(taskPropertiesView);
+
+        return taskPropertiesController;
     }
 
     @FXML
@@ -208,17 +211,18 @@ public class ListController {
     public void centerNewTaskBtnClicked(MouseEvent event) {
         btnStyle(event, "-fx-padding: 0 0 0 20; -fx-font-size: 14");
         Button eventBtn = (Button) event.getSource();
+        centerNewTaskPane.setStyle("-fx-background-color: rgb(123, 132, 146);");
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
-            if (taskPropertiesView != null)
-                hideNode(taskPropertiesView);
+            if (toDoListController.mainPane.getRight() != null)
+                hideNode(toDoListController.mainPane.getRight());
 
             hideNode(eventBtn);
             TextField textField = new TextField();
             setAnchorProperty(textField, 0d, 0d, 0d, 0d);
             centerNewTaskPane.getChildren().add(textField);
 
-            ContextMenu errorPopup = initTextFieldValidator(textField);
+            ContextMenu errorPopup = initTextFieldValidator(textField, "-fx-border-color: rgb(123, 132, 146); -fx-background-color: rgb(123, 132, 146);");
 
             textField.focusedProperty().addListener((observable, unfocused, focused) -> {
                 if (unfocused) {
@@ -228,14 +232,15 @@ public class ListController {
                             TaskModel taskModel = new TaskModel(textField.getText());
                             listModel.addTask(taskModel);
 
-                            createTaskBtn(taskModel);
+                            taskPropertiesViews.put(textField.getText(), createTaskPropertiesView(textField.getText()));
 
                             updateTaskScrollPane();
 
                             centerNewTaskPane.getChildren().remove(textField);
                             showNode(eventBtn);
+                            centerNewTaskPane.setStyle("");
                         } catch (NullPointerException e) {
-                            textField.getParent().setStyle("-fx-border-color: red");
+                            textField.getParent().setStyle("-fx-border-color: red; -fx-background-color: rgb(123, 132, 146);");
                             errorPopup.getItems().clear();
                             errorPopup.getItems().add(new MenuItem("List with that name already exists!"));
                             errorPopup.show(textField, Side.RIGHT, -textField.getWidth(), -textField.getHeight());
@@ -247,6 +252,7 @@ public class ListController {
 
                         centerNewTaskPane.getChildren().remove(textField);
                         showNode(eventBtn);
+                        centerNewTaskPane.setStyle("");
                     }
                 }
             });
@@ -264,6 +270,8 @@ public class ListController {
     }
 
     protected void createTaskBtn(TaskModel task) {
+        taskPropertiesViews.put(task.getName(), createTaskPropertiesView(task.getName()));
+
         Button btn = new Button(task.getName());
         btn.setId("centerTaskBtn");
         setAnchorProperty(btn, 30d, 0d, 0d, 0d);
@@ -300,5 +308,13 @@ public class ListController {
 
     public ListModel getListModel() {
         return toDoListController.getToDoListModel().getList(listName);
+    }
+
+    public void setListView(AnchorPane listView) {
+        this.listView = listView;
+    }
+
+    public AnchorPane getListView() {
+        return listView;
     }
 }
