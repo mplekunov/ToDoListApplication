@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import static ucf.assignments.ToDoListController.*;
 
 public class ListController {
-    private final ToDoListController toDoListController;
+    public final ToDoListController toDoListController;
     private HashMap<String, TaskPropertiesController> taskPropertiesViews;
 
     private final String listName;
@@ -29,6 +30,8 @@ public class ListController {
 
     @FXML
     TextField centerListNameField;
+    @FXML
+    AnchorPane centerListNameFieldPane;
     @FXML
     AnchorPane centerNewTaskPane;
     @FXML
@@ -72,53 +75,59 @@ public class ListController {
 
     protected void reloadTaskScrollPane() {
         ListModel listModel = toDoListController.getToDoListModel().findList(listName);
-        if (taskScrollPaneVBox != null)
+
+        if (taskScrollPaneVBox != null) {
             taskScrollPaneVBox.getChildren().removeAll(taskScrollPaneVBox.getChildren());
+            taskPropertiesViews.clear();
+        }
+
         listModel.getAllTasks().forEach(this::createTaskButton);
     }
 
     //DOESN'T WORK
     @FXML
     public void setClickOnListNameField(MouseEvent event) {
-//        if (event.getClickCount() == 2) {
-//            centerListNameField.editableProperty().set(true);
-//
-//            Button btn = (Button) toDoListController.leftScrollPaneVBox
-//                    .lookupAll("#leftListBtn").stream()
-//                    .filter(node -> ((Button)node).getText().equals(centerListNameField.getText()))
-//                    .findFirst().get();
-//
-//            ContextMenu contextMenu = toDoListController.initTextFieldValidator(centerListNameField);
-//
-//            Pane parent = (Pane)centerListNameField.getParent();
-//
-//            centerListNameField.focusedProperty().addListener((observable, unfocused, focused) -> {
-//                if (unfocused) {
-//                    if (!centerListNameField.getText().isEmpty()) {
-//                        boolean isMatch = toDoListController.getToDoList().getLists().stream().anyMatch(o -> {
-//                            if (o.getListName().equals(centerListNameField.getText()))
-//                                return !centerListNameField.getText().equals(btn.getText());
-//
-//                            return false;
-//                        });
-//
-//                        if (isMatch) {
-//                            parent.setStyle("-fx-border-color: red");
-//                            contextMenu.getItems().clear();
-//                            contextMenu.getItems().add(new MenuItem("List with that name already exists!"));
-//                            contextMenu.show(parent, Side.RIGHT, -parent.getWidth(), -parent.getHeight());
-//
-//                            centerListNameField.requestFocus();
-//                        }
-//                        else {
-//                            btn.setText(centerListNameField.getText());
-//                            centerListNameField.editableProperty().set(false);
-//                            listManager.setListName(centerListNameField.getText());
-//                        }
-//                    }
-//                }
-//            });
-//        }
+        TextField textField = (TextField) event.getSource();
+
+        centerListNameFieldPane.setStyle("-fx-background-color: rgb(229, 220, 222);");
+
+        if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+            ContextMenu errorPopup = initTextFieldValidator(textField, "-fx-background-color: rgb(229, 220, 222); -fx-border-color: rgb(229, 220, 222);");
+
+            centerListNameField.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+                if (textField.getText().length() >= 20) {
+                    event.consume();
+                }
+            });
+
+            centerListNameField.focusedProperty().addListener((observable, unfocused, focused) -> {
+                if (unfocused) {
+                    if (!textField.getText().isEmpty() && !textField.getText().equals(listName)) {
+                        try {
+                            toDoListController.getToDoListModel().findList(textField.getText());
+
+                            centerListNameFieldPane.setStyle("-fx-border-color: red; -fx-background-color: rgb(229, 220, 222);");
+
+                            errorPopup.getItems().clear();
+                            errorPopup.getItems().add(new MenuItem("List with such name already exists."));
+                            errorPopup.show(centerListNameFieldPane, Side.RIGHT,
+                                    -(centerListNameFieldPane.getWidth()) + 5, -(centerListNameFieldPane.getHeight() + 5));
+
+                            textField.requestFocus();
+                        } catch (NullPointerException e) {
+                            toDoListController.getToDoListModel().getList(listName).setListName(textField.getText());
+                            toDoListController.reloadListScrollPane();
+
+                            toDoListController.mainPane.centerProperty()
+                                    .set(toDoListController.getListView(textField.getText()));
+                        }
+                    } else {
+                        centerListNameFieldPane.setStyle("");
+                        textField.setText(listName);
+                    }
+                }
+            });
+        }
     }
 
     @FXML
@@ -242,7 +251,7 @@ public class ListController {
                         } catch (NullPointerException e) {
                             textField.getParent().setStyle("-fx-border-color: red; -fx-background-color: rgb(123, 132, 146);");
                             errorPopup.getItems().clear();
-                            errorPopup.getItems().add(new MenuItem("List with that name already exists!"));
+                            errorPopup.getItems().add(new MenuItem("Task with such name already exists!"));
                             errorPopup.show(textField, Side.RIGHT, -textField.getWidth() + 5, -(textField.getHeight() + 10));
 
                             textField.requestFocus();
@@ -316,5 +325,9 @@ public class ListController {
 
     public AnchorPane getListView() {
         return listView;
+    }
+
+    public HashMap<String, TaskPropertiesController> getTaskPropertiesViews() {
+        return taskPropertiesViews;
     }
 }

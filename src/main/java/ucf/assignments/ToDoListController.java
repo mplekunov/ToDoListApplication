@@ -420,4 +420,7 @@ public class ToDoListController {
         }
     }
 
+    public AnchorPane getListView(String listName) {
+        return listViews.get(listName).getListView();
+    }
 }

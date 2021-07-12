@@ -50,7 +50,7 @@
     -fx-border-color: rgb(175, 159, 131);
 }
 
-#TaskNameTextFieldContextMenu {
+#contextMenu {
     -fx-background-color: grey;
     -fx-border-color: grey;
     -fx-background-radius: 20 20 0 20;

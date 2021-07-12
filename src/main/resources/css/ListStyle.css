@@ -30,6 +30,11 @@
     -fx-background-color: rgb(249, 240, 242);
 }
 
+#centerListNameFieldPane {
+    -fx-background-radius: 10 10 10 10;
+    -fx-border-radius: 10 10 10 10;
+}
+
 #centerMenuBar .menu:hover, #centerMenuBar .menu:showing {
     -fx-background-color: rgb(229, 220, 222);
     -fx-border-color: rgb(189,180,181);

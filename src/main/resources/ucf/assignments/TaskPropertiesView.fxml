@@ -35,9 +35,9 @@
                 </Button>
             </children>
         </AnchorPane>
-        <AnchorPane id="rightTaskNamePane" focusTraversable="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane id="rightTaskNamePane" fx:id="rightTaskNameFieldPane" focusTraversable="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <TextField id="rightTaskNameField" fx:id="rightTaskNameField" text="Task Name" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" />
+                <TextField id="rightTaskNameField" fx:id="rightTaskNameField" onMousePressed="#setClickOnTaskNameField" onMouseReleased="#setClickOnTaskNameField" text="Task Name" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" />
             </children>
             <padding>
                 <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />

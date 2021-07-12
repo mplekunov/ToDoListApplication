@@ -19,7 +19,7 @@
    <children>
       <VBox focusTraversable="true" layoutX="10.0" layoutY="10.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="12.0">
          <children>
-            <AnchorPane focusTraversable="true">
+            <AnchorPane fx:id="centerListNameFieldPane" focusTraversable="true">
                <children>
                   <MenuBar id="centerMenuBar" fx:id="centerMenuBar" AnchorPane.bottomAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
                      <menus>
@@ -44,7 +44,7 @@
                         <Insets />
                      </opaqueInsets>
                   </MenuBar>
-                  <TextField id="centerListNameField" fx:id="centerListNameField" editable="false" layoutX="55.0" layoutY="14.0" onMouseClicked="#setClickOnListNameField" text="List Name" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TextField id="centerListNameField" fx:id="centerListNameField" layoutX="55.0" layoutY="14.0" onMouseReleased="#setClickOnListNameField" text="List Name" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <font>
                         <Font size="18.0" />
                      </font></TextField>
