@@ -1,11 +1,8 @@
 package ucf.assignments;
 
-import javafx.concurrent.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
 import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -87,17 +84,35 @@ class ListModelTest {
     @DisplayName("delete all tasks")
     void deleteAllTasks() {
         ListModel listModel = new ListModel("test_case", null, test_set);
+
+        listModel.deleteAllTasks();
+
+        assertTrue(listModel.getAllTasks().isEmpty());
     }
 
     @Test
+    @DisplayName("returns collection of all tasks")
     void getAllTasks() {
+        ListModel listModel = new ListModel("test_case", null, test_set);
+
+        assertArrayEquals(test_set.toArray(), listModel.getAllTasks().toArray());
     }
 
     @Test
+    @DisplayName("returns collection of completed tasks")
     void getCompletedTasks() {
+        ListModel listModel = new ListModel("tes_case", null, test_set);
+
+        listModel.getTask(prince).setCompletionState(true);
+
+        assertTrue(listModel.getCompletedTasks().contains(prince));
     }
 
     @Test
+    @DisplayName("returns collection of in progress task (completion state = false)")
     void getInProgressTasks() {
+        ListModel listModel = new ListModel("test_case", null, test_set);
+
+        assertTrue(listModel.getInProgressTasks().contains(prince));
     }
 }

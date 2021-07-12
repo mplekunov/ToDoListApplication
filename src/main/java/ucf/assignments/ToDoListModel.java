@@ -49,7 +49,7 @@ public class ToDoListModel {
         return new ListModel(mapped.getListName(), mapped.getId(), new TreeSet<>(mapped.getAllTasks()));
     }
 
-    public void addLst(ListModel listManager) throws NullPointerException {
+    public void addList(ListModel listManager) throws NullPointerException {
         boolean isFound = lists.keySet().stream()
                 .anyMatch(key -> key.equals(listManager));
 

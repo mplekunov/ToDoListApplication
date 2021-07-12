@@ -288,7 +288,7 @@ public class ToDoListController {
                 if (unfocused) {
                     if (!textField.getText().isEmpty()) {
                         try {
-                            toDoListModel.addLst(new ListModel(textField.getText()));
+                            toDoListModel.addList(new ListModel(textField.getText()));
 
                             createLeftListBtn(textField.getText());
 
