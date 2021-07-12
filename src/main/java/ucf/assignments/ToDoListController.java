@@ -30,6 +30,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 public class ToDoListController {
     private final Database database;
     private ToDoListModel toDoList;
@@ -123,15 +125,26 @@ public class ToDoListController {
 
         toDoList.upload(database);
 
-        File file = fileChooser.showSaveDialog(mainPane.getScene().getWindow());
+        if (!toDoList.getLists().isEmpty()) {
+            File file = fileChooser.showSaveDialog(mainPane.getScene().getWindow());
 
-        if (!file.getName().contains("."))
-            file = new File(file.getAbsolutePath() + ".sqlite");
+            if (!file.getName().contains("."))
+                file = new File(file.getAbsolutePath() + ".sqlite");
 
-        try {
-            Files.copy(Paths.get(database.getFilePath()), Path.of(file.getPath()));
-        } catch (java.io.IOException e) {
-            e.printStackTrace();
+            try {
+                Files.copy(Paths.get(database.getFilePath()), Path.of(file.getPath()), REPLACE_EXISTING);
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
+            }
+
+            updateListScrollPane();
+            listController.updateTaskScrollPane();
+        }
+        else {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setHeaderText("Action is not valid");
+            errorAlert.setContentText("You have no items for export");
+            errorAlert.showAndWait();
         }
     }
 
@@ -205,8 +218,7 @@ public class ToDoListController {
             if (mainPane.getRight() != null)
                 hideNode(mainPane.getRight());
 
-                createListView(toDoList.findList(eventBtn.getText()).getListName());
-//            createListView(toDoList.findList(eventBtn.getText()));
+            createListView(toDoList.findList(eventBtn.getText()).getListName());
 
             mainPane.centerProperty().set(listView);
         }
@@ -276,7 +288,8 @@ public class ToDoListController {
     }
 
     protected void updateListScrollPane() {
-        leftScrollPaneVBox.getChildren().removeAll(leftScrollPaneVBox.getChildren());
+        if (leftScrollPaneVBox != null)
+            leftScrollPaneVBox.getChildren().removeAll(leftScrollPaneVBox.getChildren());
         toDoList.getLists().forEach(listManager -> createLeftListBtn(listManager.getListName()));
     }
 

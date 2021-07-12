@@ -118,12 +118,14 @@ public class ListModel implements Comparable {
     }
 
     public void upload(Database db) {
-        tasks.forEach((key, value) -> {
-            if (value == DataState.Removed)
-                db.deleteTask(key);
-            else
-                db.updateTask(key, listName);
-        });
+        tasks.entrySet().stream()
+                .filter(entry -> !entry.getValue().equals(DataState.Cached))
+                .forEach(entry -> {
+                    if (entry.getValue() == DataState.Removed)
+                        db.deleteTask(entry.getKey());
+                    else
+                        db.updateTask(entry.getKey(), listName);
+                });
 
         tasks.values().removeIf(dataState -> dataState.equals(DataState.Removed));
         tasks.entrySet().forEach(entry -> entry.setValue(DataState.Cached));

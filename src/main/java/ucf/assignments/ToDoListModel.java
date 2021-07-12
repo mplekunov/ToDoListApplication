@@ -89,14 +89,16 @@ public class ToDoListModel {
     }
 
     public void upload(Database db) {
-        lists.forEach((key, value) -> {
-            if (value == DataState.Removed)
-                db.deleteList(key);
-            else {
-                db.updateList(key);
-                key.upload(db);
-            }
-        });
+        lists.entrySet().stream()
+                .filter(entry -> !entry.getValue().equals(DataState.Cached))
+                .forEach(entry -> {
+                    if (entry.getValue() == DataState.Removed)
+                        db.deleteList(entry.getKey());
+                    else {
+                        db.updateList(entry.getKey());
+                        entry.getKey().upload(db);
+                    }
+                });
 
         lists.values().removeIf(dataState -> dataState.equals(DataState.Removed));
         lists.entrySet().forEach(entry -> entry.setValue(DataState.Cached));

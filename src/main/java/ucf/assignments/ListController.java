@@ -70,8 +70,8 @@ public class ListController {
 
     protected void updateTaskScrollPane() {
         ListModel listModel = toDoListController.getToDoListModel().findList(listName);
-
-        taskScrollPaneVBox.getChildren().removeAll(taskScrollPaneVBox.getChildren());
+        if (taskScrollPaneVBox != null)
+            taskScrollPaneVBox.getChildren().removeAll(taskScrollPaneVBox.getChildren());
         listModel.getAllTasks().forEach(this::createTaskBtn);
     }
 
