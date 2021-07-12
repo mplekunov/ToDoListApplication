@@ -78,10 +78,10 @@ public class ToDoListController {
 
     @FXML
     public void initialize() {
-        toDoListModel.getLists().forEach(listManager -> createLeftListBtn(listManager.getListName()));
+        toDoListModel.getLists().forEach(listManager -> createListButton(listManager.getListName()));
 
-        mainPane.setOnMouseClicked(this::setFocusResetOnMouseClick);
-        mainPane.setOnKeyReleased(this::setFocusResetOnEnterPressed);
+        mainPane.setOnMouseClicked(this::setFocusOnMainPainWhenMouseClicked);
+        mainPane.setOnKeyReleased(this::setFocusOnMainPaneWhenEnterKeyPressed);
         topMenuExit.setOnAction(this::exitApplication);
         topMenuImport.setOnAction(this::importDatabaseFile);
         topMenuExport.setOnAction(this::exportDatabaseFile);
@@ -141,7 +141,7 @@ public class ToDoListController {
                 e.printStackTrace();
             }
 
-            updateListScrollPane();
+            reloadListScrollPane();
             mainPane.centerProperty().set(null);
         } else {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
@@ -181,13 +181,13 @@ public class ToDoListController {
         System.exit(0);
     }
 
-    private void setFocusResetOnEnterPressed(KeyEvent keyEvent) {
+    private void setFocusOnMainPaneWhenEnterKeyPressed(KeyEvent keyEvent) {
         if (keyEvent.getCode() == KeyCode.ENTER)
             mainPane.requestFocus();
     }
 
     @FXML
-    public void topSearchBarReleased(MouseEvent event) {
+    public void setClickOnSearchBarTextField(MouseEvent event) {
         TextField textField = (TextField) event.getSource();
         topSearchPane.setStyle("-fx-background-color: rgb(197, 174, 162)");
 
@@ -231,15 +231,15 @@ public class ToDoListController {
     }
 
     @FXML
-    public void leftShowListsBtnClicked(MouseEvent event) {
-        btnStyle(event, "-fx-padding: 0 0 0 40; -fx-font-size: 13; -fx-graphic-text-gap: 160;");
+    public void setClickOnShowListsButton(MouseEvent event) {
+        applyButtonStyle(event, "-fx-padding: 0 0 0 40; -fx-font-size: 13; -fx-graphic-text-gap: 160;");
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
             //duplicate
             if (mainPane.getRight() != null)
                 hideNode(mainPane.getRight());
 
-            updateListScrollPane();
+            reloadListScrollPane();
 
             if (leftScrollPane.visibleProperty().get()) {
                 leftScrollPane.setVisible(false);
@@ -252,8 +252,8 @@ public class ToDoListController {
     }
 
     @FXML
-    public void leftListBtnClicked(MouseEvent event) {
-        btnStyle(event, "-fx-padding: 0 0 0 30; -fx-font-size: 13;");
+    public void setClickOnListButton(MouseEvent event) {
+        applyButtonStyle(event, "-fx-padding: 0 0 0 30; -fx-font-size: 13;");
         Button eventBtn = (Button) event.getSource();
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
@@ -266,8 +266,8 @@ public class ToDoListController {
     }
 
     @FXML
-    public void leftNewListBtnClicked(MouseEvent event) {
-        btnStyle(event, "-fx-padding: 0 0 0 20; -fx-font-size: 14");
+    public void setClickOnNewListButton(MouseEvent event) {
+        applyButtonStyle(event, "-fx-padding: 0 0 0 20; -fx-font-size: 14");
         Button eventBtn = (Button) event.getSource();
         leftNewListPane.setStyle("-fx-background-color: rgb(123, 132, 146);");
 
@@ -290,9 +290,9 @@ public class ToDoListController {
                         try {
                             toDoListModel.addList(new ListModel(textField.getText()));
 
-                            createLeftListBtn(textField.getText());
+                            createListButton(textField.getText());
 
-                            updateListScrollPane();
+                            reloadListScrollPane();
 
                             parent.getChildren().remove(textField);
                             showNode(eventBtn);
@@ -300,7 +300,7 @@ public class ToDoListController {
 
                             if (!leftScrollPane.isVisible()) {
                                 leftShowListsBtn.fire();
-                                leftShowListsBtnClicked(event);
+                                setClickOnShowListsButton(event);
                             }
                         } catch (NullPointerException e) {
                             textField.getParent().setStyle("-fx-border-color: red; -fx-background-color: rgb(123, 132, 146);");
@@ -338,13 +338,13 @@ public class ToDoListController {
         return contextMenu;
     }
 
-    protected void updateListScrollPane() {
+    protected void reloadListScrollPane() {
         if (leftScrollPaneVBox != null) {
             leftScrollPaneVBox.getChildren().removeAll(leftScrollPaneVBox.getChildren());
             listViews.clear();
         }
 
-        toDoListModel.getLists().forEach(listManager -> createLeftListBtn(listManager.getListName()));
+        toDoListModel.getLists().forEach(listManager -> createListButton(listManager.getListName()));
     }
 
     private ListController createListView(String listName) {
@@ -364,13 +364,13 @@ public class ToDoListController {
         return listController;
     }
 
-    private void createLeftListBtn(String listName) {
+    private void createListButton(String listName) {
         Button listBtn = new Button(listName);
         listBtn.setId("leftListBtn");
         setAnchorProperty(listBtn, 0d, 0d, 0d, 0d);
 
-        listBtn.onMousePressedProperty().set(this::leftListBtnClicked);
-        listBtn.onMouseReleasedProperty().set(this::leftListBtnClicked);
+        listBtn.onMousePressedProperty().set(this::setClickOnListButton);
+        listBtn.onMouseReleasedProperty().set(this::setClickOnListButton);
 
         leftScrollPaneVBox.getChildren().add(new AnchorPane(listBtn));
         listViews.put(listName, createListView(listName));
@@ -393,7 +393,7 @@ public class ToDoListController {
         node.setManaged(true);
     }
 
-    protected static void btnStyle(MouseEvent event, String style) {
+    protected static void applyButtonStyle(MouseEvent event, String style) {
         Node btn = ((Node) event.getSource());
 
         if (event.getEventType().equals(MouseEvent.MOUSE_PRESSED)) {
@@ -413,7 +413,7 @@ public class ToDoListController {
         return toDoListModel;
     }
 
-    private void setFocusResetOnMouseClick(InputEvent mouseEvent) {
+    private void setFocusOnMainPainWhenMouseClicked(InputEvent mouseEvent) {
         if (mouseEvent.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
             Node node = (Node) mouseEvent.getSource();
             node.requestFocus();

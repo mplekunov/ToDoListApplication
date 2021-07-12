@@ -54,13 +54,13 @@ public class TaskPropertiesController {
 
         if (listController.findListModel().findTask(taskName).getDueDate() != null ) {
             rightAddDueDateBtn.setText(DateFormatter.dateToString(listController.findListModel().findTask(taskName).getDueDate()));
-            createDueDateClearBtn();
+            createDueDateClearButton();
         }else
             rightAddDueDateBtn.setText("Add Due Date");
     }
 
-    protected void setDueDateClearBtn(MouseEvent event) {
-        btnStyle(event,"-fx-padding: 0 16 0 0;");
+    protected void setClickOnDueDateClearButton(MouseEvent event) {
+        applyButtonStyle(event,"-fx-padding: 0 16 0 0;");
         Button clear = (Button) event.getSource();
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
@@ -109,8 +109,8 @@ public class TaskPropertiesController {
     }
 
     @FXML
-    public void rightBackBtnClicked(MouseEvent event) {
-        btnStyle(event, "-fx-padding: 0 0 0 16;");
+    public void setClickOnBackButton(MouseEvent event) {
+        applyButtonStyle(event, "-fx-padding: 0 0 0 16;");
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
             if (right.visibleProperty().get())
@@ -120,30 +120,30 @@ public class TaskPropertiesController {
         }
     }
     @FXML
-    public void rightAddDueDateBtnClicked(MouseEvent event) {
-        btnStyle(event, "-fx-padding: 0 0 0 20; -fx-font-size: 12");
+    public void setClickOnDueDateButton(MouseEvent event) {
+        applyButtonStyle(event, "-fx-padding: 0 0 0 20; -fx-font-size: 12");
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
             hideNode(rightAddDueDateBtn.getParent());
-            VBox calendar = createCalendar(rightDueDateAndNoteVBox);
+            VBox calendar = createCalendarPane(rightDueDateAndNoteVBox);
             rightDueDateAndNoteVBox.getChildren().add(calendar);
         }
     }
 
     @FXML
-    public void rightDeleteBtnClicked(MouseEvent event) {
-        btnStyle(event, "-fx-padding: 0 16 0 0;");
+    public void setClickOnDeleteButton(MouseEvent event) {
+        applyButtonStyle(event, "-fx-padding: 0 16 0 0;");
 
         if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
             listController.getListModel().deleteTask(taskName);
 
-            rightBackBtnClicked(event);
+            setClickOnBackButton(event);
             listController.taskScrollPaneVBox.getChildren().remove(((Node) event.getSource()).getParent());
-            listController.updateTaskScrollPane();
+            listController.reloadTaskScrollPane();
         }
     }
 
-    protected void createDueDateClearBtn() {
+    protected void createDueDateClearButton() {
         Button clear = new Button();
         rightAddDueDatePane.getChildren().add(clear);
 
@@ -158,11 +158,11 @@ public class TaskPropertiesController {
         setAnchorProperty(clear, null, 0d, 0d, 0d);
         setAnchorProperty(rightAddDueDateBtn, 0d, 38d, 0d, 0d);
 
-        clear.setOnMousePressed(this::setDueDateClearBtn);
-        clear.setOnMouseReleased(this::setDueDateClearBtn);
+        clear.setOnMousePressed(this::setClickOnDueDateClearButton);
+        clear.setOnMouseReleased(this::setClickOnDueDateClearButton);
     }
 
-    protected Button createCalendarBtn(String name) {
+    protected Button createCalendarButton(String name) {
         Button btn = new Button();
         btn.setText(name);
         btn.setId("calendarBtn");
@@ -172,15 +172,15 @@ public class TaskPropertiesController {
         return btn;
     }
 
-    protected VBox createCalendar(Pane parent) {
+    protected VBox createCalendarPane(Pane parent) {
         DatePicker datePicker = new DatePicker(listController.findListModel().findTask(taskName).getDueDate());
         DatePickerSkin datePickerSkin = new DatePickerSkin(datePicker);
         Node popupContent = datePickerSkin.getPopupContent();
 
         popupContent.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-border-radius: 8;");
 
-        Button cancel = createCalendarBtn("Cancel");
-        Button save = createCalendarBtn("Save");
+        Button cancel = createCalendarButton("Cancel");
+        Button save = createCalendarButton("Save");
 
         HBox hbox = new HBox(cancel, save);
         hbox.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
@@ -202,7 +202,7 @@ public class TaskPropertiesController {
             listController.getListModel().getTask(taskName).setDueDate(datePicker.getValue());
 
             rightAddDueDateBtn.setText(DateFormatter.dateToString(listController.findListModel().findTask(taskName).getDueDate()));
-            createDueDateClearBtn();
+            createDueDateClearButton();
             cancel.fireEvent(keyEvent);
         });
 

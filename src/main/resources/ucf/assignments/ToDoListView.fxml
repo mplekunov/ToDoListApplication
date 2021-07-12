@@ -45,7 +45,7 @@
                 </MenuBar>
                 <AnchorPane id="topSearchPane" fx:id="topSearchPane" focusTraversable="true" prefWidth="225.0">
                     <children>
-                        <TextField id="topTextField" fx:id="topSearchBar" layoutX="31.0" layoutY="-3.0" onMouseReleased="#topSearchBarReleased" prefHeight="26.0" prefWidth="175.0" promptText="Type here to search" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TextField id="topTextField" fx:id="topSearchBar" layoutX="31.0" layoutY="-3.0" onMouseReleased="#setClickOnSearchBarTextField" prefHeight="26.0" prefWidth="175.0" promptText="Type here to search" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <font>
                                 <Font size="18.0" />
                             </font>
@@ -144,7 +144,7 @@
                                 <Insets />
                             </VBox.margin>
                             <children>
-                                <ToggleButton id="leftShowListsBtn" fx:id="leftShowListsBtn" alignment="BASELINE_LEFT" contentDisplay="RIGHT" graphicTextGap="190.0" mnemonicParsing="false" onMousePressed="#leftShowListsBtnClicked" onMouseReleased="#leftShowListsBtnClicked" text="Lists" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <ToggleButton id="leftShowListsBtn" fx:id="leftShowListsBtn" alignment="BASELINE_LEFT" contentDisplay="RIGHT" graphicTextGap="190.0" mnemonicParsing="false" onMousePressed="#setClickOnShowListsButton" onMouseReleased="#setClickOnShowListsButton" text="Lists" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <graphic>
                                         <ImageView id="ListBtnIcon" fx:id="listBtnIcon" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -173,7 +173,7 @@
                 </VBox>
                 <AnchorPane fx:id="leftNewListPane" focusTraversable="true" minHeight="35.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
                     <children>
-                        <Button id="leftNewListBtn" fx:id="leftNewListBtn" alignment="BASELINE_LEFT" graphicTextGap="12.0" minHeight="30.0" mnemonicParsing="false" onMousePressed="#leftNewListBtnClicked" onMouseReleased="#leftNewListBtnClicked" pickOnBounds="false" text="New List" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <Button id="leftNewListBtn" fx:id="leftNewListBtn" alignment="BASELINE_LEFT" graphicTextGap="12.0" minHeight="30.0" mnemonicParsing="false" onMousePressed="#setClickOnNewListButton" onMouseReleased="#setClickOnNewListButton" pickOnBounds="false" text="New List" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <graphic>
                                 <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true">
                                     <image>

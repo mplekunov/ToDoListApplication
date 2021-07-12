@@ -25,11 +25,11 @@
                      <menus>
                         <Menu mnemonicParsing="false">
                            <items>
-                              <MenuItem fx:id="menuShowAll" mnemonicParsing="false" onAction="#menuShowAllClicked" text="Show All" />
-                              <MenuItem fx:id="menuShowCompleted" mnemonicParsing="false" onAction="#menuShowCompletedClicked" text="Show Completed" />
-                              <MenuItem fx:id="menuShowInProgress" mnemonicParsing="false" onAction="#menuShowInProgressClicked" text="Show In Progress" />
-                              <MenuItem fx:id="menuDeleteList" mnemonicParsing="false" onAction="#menuDeleteListClicked" text="Delete List" />
-                              <MenuItem fx:id="menuDeleteAllTasks" mnemonicParsing="false" onAction="#menuDeleteAllTasksClicked" text="Delete All Tasks" />
+                              <MenuItem fx:id="menuShowAll" mnemonicParsing="false" onAction="#setClickOnMenuShowAll" text="Show All" />
+                              <MenuItem fx:id="menuShowCompleted" mnemonicParsing="false" onAction="#setClickOnMenuShowCompleted" text="Show Completed" />
+                              <MenuItem fx:id="menuShowInProgress" mnemonicParsing="false" onAction="#setClickOnMenuShowInProgress" text="Show In Progress" />
+                              <MenuItem fx:id="menuDeleteList" mnemonicParsing="false" onAction="#setClickOnMenuDeleteList" text="Delete List" />
+                              <MenuItem fx:id="menuDeleteAllTasks" mnemonicParsing="false" onAction="#setClickOnMenuDeleteAllTasks" text="Delete All Tasks" />
                            </items>
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
@@ -44,7 +44,7 @@
                         <Insets />
                      </opaqueInsets>
                   </MenuBar>
-                  <TextField id="centerListNameField" fx:id="centerListNameField" editable="false" layoutX="55.0" layoutY="14.0" onMouseClicked="#listNameFieldClicked" text="List Name" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TextField id="centerListNameField" fx:id="centerListNameField" editable="false" layoutX="55.0" layoutY="14.0" onMouseClicked="#setClickOnListNameField" text="List Name" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <font>
                         <Font size="18.0" />
                      </font></TextField>
@@ -75,7 +75,7 @@
       </VBox>
       <AnchorPane id="centerNewTaskPane" fx:id="centerNewTaskPane" focusTraversable="true" layoutX="10.0" layoutY="10.0" minHeight="35.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
          <children>
-            <Button id="centerNewTaskBtn" fx:id="centerNewTaskBtn" alignment="BASELINE_LEFT" graphicTextGap="12.0" minHeight="30.0" mnemonicParsing="false" onMousePressed="#centerNewTaskBtnClicked" onMouseReleased="#centerNewTaskBtnClicked" text="New Task" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <Button id="centerNewTaskBtn" fx:id="centerNewTaskBtn" alignment="BASELINE_LEFT" graphicTextGap="12.0" minHeight="30.0" mnemonicParsing="false" onMousePressed="#setClickOnNewTaskButton" onMouseReleased="#setClickOnNewTaskButton" text="New Task" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <graphic>
                   <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>
