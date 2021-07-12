@@ -306,7 +306,7 @@ public class ToDoListController {
                             textField.getParent().setStyle("-fx-border-color: red; -fx-background-color: rgb(123, 132, 146);");
                             errorPopup.getItems().clear();
                             errorPopup.getItems().add(new MenuItem("List with that name already exists!"));
-                            errorPopup.show(textField, Side.RIGHT, -textField.getWidth(), -textField.getHeight());
+                            errorPopup.show(textField, Side.RIGHT, -textField.getWidth() + 5, -(textField.getHeight() + 10));
 
                             textField.requestFocus();
                         }
