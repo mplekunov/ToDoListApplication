@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Main-Class: ucf.assignments.ToDoListApp
+Class-Path: javafx-base-16.jar byte-buddy-1.11.3.jar mockito-core-3.11.2
+ .jar objenesis-3.2.jar javafx-controls-16.jar sqlite-jdbc-3.36.0.1.jar 
+ javafx-base-16-win.jar javafx-graphics-16-win.jar javafx-graphics-16.ja
+ r javafx-fxml-16-win.jar byte-buddy-agent-1.11.3.jar javafx-controls-16
+ -win.jar
+
