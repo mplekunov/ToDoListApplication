@@ -139,22 +139,24 @@ public class ToDoListController {
         if (!toDoListModel.getLists().isEmpty()) {
             File file = fileChooser.showSaveDialog(mainPane.getScene().getWindow());
 
-            if (!file.getName().contains("."))
-                file = new File(file.getAbsolutePath() + ".sqlite");
+            if (file != null) {
+                if (!file.getName().contains("."))
+                    file = new File(file.getPath() + ".sqlite");
 
-            try {
-                Files.copy(Paths.get(database.getFilePath()), Path.of(file.getPath()), REPLACE_EXISTING);
-            } catch (java.io.IOException e) {
-                e.printStackTrace();
+                try {
+                    Files.copy(Paths.get(database.getFilePath()), Path.of(file.getPath()), REPLACE_EXISTING);
+                } catch (java.io.IOException e) {
+                    e.printStackTrace();
+                }
+
+                reloadListScrollPane();
+                mainPane.centerProperty().set(null);
+            } else {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setHeaderText("Action is not valid");
+                errorAlert.setContentText("You have no items for export");
+                errorAlert.showAndWait();
             }
-
-            reloadListScrollPane();
-            mainPane.centerProperty().set(null);
-        } else {
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setHeaderText("Action is not valid");
-            errorAlert.setContentText("You have no items for export");
-            errorAlert.showAndWait();
         }
     }
 
@@ -174,13 +176,14 @@ public class ToDoListController {
 
         File selectedFile = fileChooser.showOpenDialog(null);
 
-        if (selectedFile != null)
+        if (selectedFile != null) {
             database.setConnection(selectedFile.getAbsolutePath());
 
-        //removes all already existing entries
-        leftScrollPaneVBox.getChildren().removeAll(leftScrollPaneVBox.getChildren());
-        mainPane.centerProperty().set(null);
-        toDoListModel = new ToDoListModel(database);
+            //removes all already existing entries
+            leftScrollPaneVBox.getChildren().removeAll(leftScrollPaneVBox.getChildren());
+            mainPane.centerProperty().set(null);
+            toDoListModel = new ToDoListModel(database);
+        }
     }
 
     @FXML
